@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Saturday 23 November 2013, 11:21:39
+ * Last Modified: Saturday 23 November 2013, 11:32:33
  * Version: $Id$
  */
 
@@ -75,6 +75,14 @@ class EC2 extends Base
         }
         return $ret;
     } /*}}}*/
+    /**
+     * da
+     * shorthand for describeAMIs (images)
+     */
+    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
+    {
+        return $this->describeAMIs($executableby,$imageId,$owner,$filter);
+    }/*}}}*/
     /**
      * describeAMIs
      * list your ami images
