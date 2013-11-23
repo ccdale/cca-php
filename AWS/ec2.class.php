@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Thursday 21 November 2013, 15:38:32
+ * Last Modified: Saturday 23 November 2013, 11:21:39
  * Version: $Id$
  */
 
@@ -23,59 +23,85 @@ class EC2 extends Base
     private $accesskey;
     private $secretkey;
     private $region;
-    private $rawinstances;
+    private $rawdata;
     private $instances;
 
-    public function __construct($logg=null,$accesskey="",$secretkey="",$region="eu-west-1")
+    public function __construct($logg=null,$accesskey="",$secretkey="",$region="eu-west-1") /*{{{*/
     {
         parent::__construct($logg);
         $this->setAccessKey($accesskey);
         $this->setSecretKey($secretkey);
         $this->setRegion($region);
-    }
-    public function __destruct()
+    } /*}}}*/
+    public function __destruct() /*{{{*/
     {
-    }
-    public function setAccessKey($accessKey="")
+    } /*}}}*/
+    public function setAccessKey($accessKey="") /*{{{*/
     {
         if(is_string($accessKey)){
             $this->accesskey=$accessKey;
         }else{
             var_dump($accessKey);
         }
-    }
-    public function setSecretKey($secretKey="")
+    } /*}}}*/
+    public function setSecretKey($secretKey="") /*{{{*/
     {
         if(is_string($secretKey)){
             $this->secretkey=$secretKey;
         }
-    }
-    public function getRegion()
+    } /*}}}*/
+    public function getRegion() /*{{{*/
     {
         return $this->region;
-    }
-    public function setRegion($region="")
+    } /*}}}*/
+    public function setRegion($region="") /*{{{*/
     {
         if(is_string($region)){
             $this->region=$region;
         }
-    } 
-    public function describeInstances()
+    } /*}}}*/
+    public function di()/*{{{*/ /*{{{*/
+    {
+        return $this->describeInstances();
+    }/*}}}*/ /*}}}*/
+    public function describeInstances() /*{{{*/
     {
         $ret=false;
         $this->initParams();
         $this->params["Action"]="DescribeInstances";
-        $this->rawinstances=$this->doCurl();
+        $this->rawdata=$this->doCurl();
         if($this->decodeRawInstances()){
             $ret=$this->instances;
         }
         return $ret;
-    }
-    public function getRawData()
+    } /*}}}*/
+    /**
+     * describeAMIs
+     * list your ami images
+     *
+     * see: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
+     * returns: array of ami images
+     *
+     * $executableby: string or array of strings
+     * $imageid: string or array of strings
+     * $owner: string or array of strings
+     * $filter: array of key=>val pairs
+     */
+    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
     {
-        return $this->rawinstances;
-    }
-    private function initParams()
+        $ret=false;
+        $this->initParams();
+        $this->addParam("Action","DescribeImages");
+        $this->addParam("ExecutableBy",$executableby);
+        $this->addParam("ImageId",$imageid);
+        $this->addParam("Owner",$owner);
+        $this->addFilterParam("Filter",$filter);
+    }/*}}}*/
+    public function getRawData() /*{{{*/
+    {
+        return $this->rawdata;
+    } /*}}}*/
+    private function initParams() /*{{{*/
     {
         $this->params=array(
             "AWSAccessKeyId"=>$this->accesskey,
@@ -84,8 +110,62 @@ class EC2 extends Base
             "Version"=>"2013-10-15"
         );
         $this->params["Timestamp"]=gmdate("Y-m-d\TH:i:s\Z");
-    }
-    private function buildGetString()
+    } /*}}}*/
+    /**
+     * addParam
+     * adds a string or array of strings to the parameters array
+     *
+     * returns: nothing
+     * $key: string
+     * $var: false, string or array of strings
+     */
+    private function addParam($key,$var)/*{{{*/
+    {
+        $iter=1;
+        if(false!==$var){
+            if(false!==($cn=$this->ValidArray($var))){
+                foreach($var as $item){
+                    $name=$key . "." . $iter;
+                    $this->params[$name]=$item;
+                    $iter++;
+                }
+            }elseif(false!==($cn=$this->ValidStr($var))){
+                $name=$key . "." . $iter;
+                $this->params[$name]=$var;
+            }
+        }
+    }/*}}}*/
+    /**
+     * addFilterParam
+     * adds filter parameters
+     *
+     * returns: nothing
+     *
+     * $filter: array("filtername"=>"filterval","filtername"=>array("filterval","filterval"))
+     *
+     */
+    private function addFilterParam($filter)/*{{{*/
+    {
+        if(false!==($cn=$this->ValidArray($filter))){
+            $iter=1;
+            foreach($filter as $key=>$val){
+                if(false!==($cn=$this->ValidArray($val))){
+                    $miter=1;
+                    foreach($val as $item){
+                        $name="Filter" . "." . $iter . "." . $key . "." . $miter;
+                        $this->addParam($name,$item);
+                        $iter++;
+                        $miter++;
+                    }
+                }else{
+                    $name="Filter" . ". " . $iter . "." . $key;
+                    $this->addParam($name,$val);
+                    $iter++;
+                }
+            }
+        }
+    }/*}}}*/
+    private function buildGetString() /*{{{*/
     {
         uksort($this->params,"strcmp");
         $this->gstr="";
@@ -98,14 +178,17 @@ class EC2 extends Base
             }
         }
         $this->gstr=str_replace("%7E","~",$this->gstr);
-    }
-    private function doCurl()
+    } /*}}}*/
+    private function signRequest()/*{{{*/
     {
         $this->buildGetString();
         $this->qstr="GET\nec2." . $this->region . ".amazonaws.com\n/\n" . $this->gstr;
-
         $this->sig=urlencode(base64_encode(hash_hmac("sha256",$this->qstr,$this->secretkey,true)));
         $this->url="https://ec2." . $this->region . ".amazonaws.com/?" . $this->gstr . "&Signature=" . $this->sig;
+    }/*}}}*/
+    private function doCurl() /*{{{*/
+    {
+        $this->signRequest();
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
@@ -116,21 +199,21 @@ class EC2 extends Base
          */
         $arr=json_decode(json_encode(simplexml_load_string($res)),true);
         return $arr;
-    }
-    private function decodeRawInstances()
+    } /*}}}*/
+    private function decodeRawInstances() /*{{{*/
     {
         $ret=false;
-        if(isset($this->rawinstances["requestId"]) && isset($this->rawinstances["reservationSet"])){
+        if(isset($this->rawdata["requestId"]) && isset($this->rawdata["reservationSet"])){
             $this->instances=array();
-            foreach($this->rawinstances["reservationSet"]["item"] as $iset){
+            foreach($this->rawdata["reservationSet"]["item"] as $iset){
                 $tinst=$this->flattenInstance($iset["instancesSet"]["item"]);
                 $this->instances[$tinst["instanceId"]]=$tinst;
             }
             $ret=true;
         }
         return $ret;
-    }
-    private function flattenInstance($iarr)
+    } /*}}}*/
+    private function flattenInstance($iarr) /*{{{*/
     {
         $ckeys=array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized");
         $tinst=$this->copyKeys($ckeys,$iarr);
@@ -153,8 +236,8 @@ class EC2 extends Base
             $tinst["Name"]=$tinst["instanceId"];
         }
         return $tinst;
-    }
-    private function copyKeys($keys,$arr)
+    } /*}}}*/
+    private function copyKeys($keys,$arr) /*{{{*/
     {
         $oarr=array();
         foreach($keys as $key){
@@ -163,8 +246,8 @@ class EC2 extends Base
             }
         }
         return $oarr;
-    }
-    private function flattenSet($arr,$namekey,$datakey)
+    } /*}}}*/
+    private function flattenSet($arr,$namekey,$datakey) /*{{{*/
     {
         $oarr=array();
         if(is_array($arr)){
@@ -181,6 +264,6 @@ class EC2 extends Base
             }
         }
         return $oarr;
-    }
+    } /*}}}*/
 }
 ?>
