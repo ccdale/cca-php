@@ -9,7 +9,7 @@
  * ec2-images.class.php
  *
  * Started: Sunday 24 November 2013, 12:34:44
- * Last Modified: Sunday 24 November 2013, 13:47:02
+ * Last Modified: Sunday 24 November 2013, 19:48:03
  * Revision: $Id$
  * Version: 0.00
  */
@@ -18,7 +18,14 @@ require_once "ec2.class.php";
 
 class EC2Images extends EC2
 {
-    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")/*{{{*/
+    /** __construct {{{
+     *
+     * $logg: an instance of the logging class
+     * $accesskey: aws access key id
+     * $secretkey: aws secret key
+     * $region: aws region
+     */
+    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")
     {
         parent::__construct($logg,$accesskey,$secretkey,$region);
         $this->ckeys["images"]=array("imageId","name","imageLocation","imageState","imageOwnerId","isPublic","architecture","imageType","platform","imageOwnerAlias","rootDeviceType","blockDeviceMapping","virtualizationType","hypervisor");
@@ -30,16 +37,14 @@ class EC2Images extends EC2
     {
         parent::__destruct();
     }/*}}}*/
-    /**
-     * da
+    /** da {{{
      * shorthand for describeAMIs (images)
      */
-    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
+    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)
     {
         return $this->describeAMIs($executableby,$imageid,$owner,$filter);
     }/*}}}*/
-    /**
-     * describeAMIs
+    /** describeAMIs {{{
      * list your ami images
      *
      * see: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
@@ -50,11 +55,10 @@ class EC2Images extends EC2
      * $owner: string or array of strings
      * $filter: array of key=>val pairs
      */
-    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
+    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)
     {
         $ret=false;
-        $this->initParams();
-        $this->params["Action"]="DescribeImages";
+        $this->initParams("DescribeImages");
         if(false!==$executableby){
             $this->params["ExecutableBy"]=$executableby;
         }
@@ -64,7 +68,7 @@ class EC2Images extends EC2
         if(false!==$owner){
             $this->params["Owner"]=$owner;
         }
-        $this->addFilterParam("Filter",$filter);
+        $this->addFilterParam($filter);
         if(false!==($this->rawdata=$this->doCurl())){
             if($this->decodeRawAMIs()){
                 $ret=$this->data;

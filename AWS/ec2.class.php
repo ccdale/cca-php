@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Sunday 24 November 2013, 13:46:18
+ * Last Modified: Sunday 24 November 2013, 20:06:55
  * Version: $Id$
  */
 
@@ -88,7 +88,7 @@ class EC2 extends Base
     {
         return $this->rawdata;
     } /*}}}*/
-    protected function initParams() /*{{{*/
+    protected function initParams($action=false) /*{{{*/
     {
         $this->params=array(
             "AWSAccessKeyId"=>$this->accesskey,
@@ -97,6 +97,9 @@ class EC2 extends Base
             "Version"=>"2013-10-15"
         );
         $this->params["Timestamp"]=gmdate("Y-m-d\TH:i:s\Z");
+        if(false!==($cn=$this->ValidStr($action))){
+            $this->params["Action"]=$action;
+        }
     } /*}}}*/
     /**
      * addParam
@@ -109,6 +112,7 @@ class EC2 extends Base
     protected function addParam($key,$var)/*{{{*/
     {
         $iter=1;
+        // TODO: will this allow empty tags?
         if(false!==$var){
             if(false!==($cn=$this->ValidArray($var))){
                 foreach($var as $item){
@@ -122,23 +126,25 @@ class EC2 extends Base
             }
         }
     }/*}}}*/
-    /**
-     * addFilterParam
+    /** addFilterParam {{{
+     * 
      * adds filter parameters
      *
      * returns: nothing
      *
      * $filter: array("filtername"=>"filterval","filtername"=>array("filterval","filterval"))
+     * $istagging: is this a filter or a tag?
      *
      */
-    protected function addFilterParam($filter)/*{{{*/
+    protected function addFilterParam($filter,$istagging=false)
     {
+        $request=$istagging?"Tag":"Filter";
         if(false!==($cn=$this->ValidArray($filter))){
             $iter=1;
             foreach($filter as $key=>$val){
                 if(false!==($cn=$this->ValidArray($val))){
                     $miter=1;
-                    $name="Filter" . ". " . $iter . ".";
+                    $name=$request . ". " . $iter . ".";
                     foreach($val as $item){
                         $this->addParam($name . "Name",$key);
                         $this->addParam($name . "Value" . "." . $miter,$item);
@@ -146,7 +152,7 @@ class EC2 extends Base
                     }
                     $iter++;
                 }else{
-                    $name="Filter" . ". " . $iter . ".";
+                    $name=$request . ". " . $iter . ".";
                     $this->addParam($name . "Name",$key);
                     $this->addParam($name . "Value.1",$val);
                     $iter++;
@@ -178,7 +184,7 @@ class EC2 extends Base
     protected function doCurl() /*{{{*/
     {
         $this->signRequest();
-        // print $this->url . "\n";
+        print $this->url . "\n";
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
