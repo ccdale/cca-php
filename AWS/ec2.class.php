@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Sunday 24 November 2013, 12:46:06
+ * Last Modified: Sunday 24 November 2013, 13:46:18
  * Version: $Id$
  */
 
@@ -35,6 +35,9 @@ class EC2 extends Base
         $this->setAccessKey($accesskey);
         $this->setSecretKey($secretkey);
         $this->setRegion($region);
+        $this->ckeys=array();
+        $this->csets=array();
+        /*
         $this->ckeys=array(
             "instances"=>array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized"),
             "iamages"=>array("imageId","imageLocation","imageState","imageOwnerId","isPublic","architecture","imageType","platform","imageOwnerAlias","rootDeviceType","blockDeviceMapping","virtualizationType","hypervisor")
@@ -48,6 +51,7 @@ class EC2 extends Base
                 array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
             )
         );
+         */
     } /*}}}*/
     public function __destruct() /*{{{*/
     {
@@ -174,15 +178,18 @@ class EC2 extends Base
     protected function doCurl() /*{{{*/
     {
         $this->signRequest();
+        // print $this->url . "\n";
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+        // print "calling curl_exec\n";
         if(false!==($this->rawxml=curl_exec($ch))){
+            // print "curl_exec has returned\n";
             /*
              * the result is xml
              * the json dance will convert that into a php array
              */
-            $arr=json_decode(json_encode(simplexml_load_string($res)),true);
+            $arr=json_decode(json_encode(simplexml_load_string($this->rawxml)),true);
             return $arr;
         }
         return false;
@@ -211,7 +218,9 @@ class EC2 extends Base
                 if(false!==($tinst=$this->copyKeys($this->ckeys[$datatype],$iarr))){
                     if(isset($this->csets[$datatype])){
                         foreach($this->csets[$datatype] as $set){
-                            $tinst[$set["key"]]=flattenSet($iarr[$set["xkey"]],$set["namekey"],$set["datakey"]);
+                            if(isset($iarr[$set["xkey"]])){
+                                $tinst[$set["key"]]=$this->flattenSet($iarr[$set["xkey"]],$set["namekey"],$set["datakey"]);
+                            }
                         }
                     }
                 }

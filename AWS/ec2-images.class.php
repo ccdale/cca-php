@@ -9,7 +9,7 @@
  * ec2-images.class.php
  *
  * Started: Sunday 24 November 2013, 12:34:44
- * Last Modified: Sunday 24 November 2013, 12:44:49
+ * Last Modified: Sunday 24 November 2013, 13:47:02
  * Revision: $Id$
  * Version: 0.00
  */
@@ -21,7 +21,7 @@ class EC2Images extends EC2
     public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")/*{{{*/
     {
         parent::__construct($logg,$accesskey,$secretkey,$region);
-        $this->ckeys["images"]=array("imageId","imageLocation","imageState","imageOwnerId","isPublic","architecture","imageType","platform","imageOwnerAlias","rootDeviceType","blockDeviceMapping","virtualizationType","hypervisor");
+        $this->ckeys["images"]=array("imageId","name","imageLocation","imageState","imageOwnerId","isPublic","architecture","imageType","platform","imageOwnerAlias","rootDeviceType","blockDeviceMapping","virtualizationType","hypervisor");
         $this->csets["images"]=array(
             array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
         );
@@ -36,7 +36,7 @@ class EC2Images extends EC2
      */
     public function da($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
     {
-        return $this->describeAMIs($executableby,$imageId,$owner,$filter);
+        return $this->describeAMIs($executableby,$imageid,$owner,$filter);
     }/*}}}*/
     /**
      * describeAMIs
@@ -54,10 +54,16 @@ class EC2Images extends EC2
     {
         $ret=false;
         $this->initParams();
-        $this->addParam("Action","DescribeImages");
-        $this->addParam("ExecutableBy",$executableby);
-        $this->addParam("ImageId",$imageid);
-        $this->addParam("Owner",$owner);
+        $this->params["Action"]="DescribeImages";
+        if(false!==$executableby){
+            $this->params["ExecutableBy"]=$executableby;
+        }
+        if(false!==$imageid){
+            $this->params["ImageId"]=$imageid;
+        }
+        if(false!==$owner){
+            $this->params["Owner"]=$owner;
+        }
         $this->addFilterParam("Filter",$filter);
         if(false!==($this->rawdata=$this->doCurl())){
             if($this->decodeRawAMIs()){
@@ -69,13 +75,19 @@ class EC2Images extends EC2
     private function decodeRawAMIs()/*{{{*/
     {
         $ret=false;
-        if(isset($this->rawdate["requestId"]) && isset($this->rawdata["imagesSet"])){
+        // print "decoding...\n";
+        if(isset($this->rawdata["requestId"]) && isset($this->rawdata["imagesSet"])){
+            // print "ok so far\n";
             $this->data=array();
             if(isset($this->rawdata["imagesSet"]["item"])){
+                // print "ok\n";
                 foreach($this->rawdata["imagesSet"]["item"] as $iset){
+                    // print "flattenting image ";
                     $tinst=$this->flattenData($iset,"images");
                     $this->data[$tinst["imageId"]]=$tinst;
+                    // print $tinst["name"] . "\n";
                 }
+                $ret=true;
             }
         }
         return $ret;
