@@ -1110,6 +1110,7 @@ d	file.php	/^        $d=directoryRead($dir);$/;"	v
 d	tools.class.php	/^            $d=$this->directoryRead($dir);$/;"	v
 d	tools.class.php	/^            $d=dir($dir);$/;"	v
 d	tools.class.php	/^            $d=dir($directory);$/;"	v
+da	AWS/ec2.class.php	/^    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)\/*{{{*\/$/;"	f
 da	HTML/form.class.php	/^    var $da;$/;"	v
 da	HTML/input_field.class.php	/^ var $da; \/\/ array to hold the details$/;"	v
 dark	Shell/cli.class.php	/^                    $dark=true;$/;"	v
@@ -2261,8 +2262,7 @@ mx	Media/mediawalker.class.php	/^    private $mx;$/;"	v
 mypid	DVB/livetv.php	/^$mypid=posix_getpid();$/;"	v
 mypid	DVB/livetvts.php	/^$mypid=posix_getpid();$/;"	v
 nPadStr	DB/data.class.php	/^    function nPadStr($string,$length=2)$/;"	f
-name	AWS/ec2.class.php	/^                        $name="Filter" . "." . $iter . "." . $key . "." . $miter;$/;"	v
-name	AWS/ec2.class.php	/^                    $name="Filter" . ". " . $iter . "." . $key;$/;"	v
+name	AWS/ec2.class.php	/^                    $name="Filter" . ". " . $iter . ".";$/;"	v
 name	AWS/ec2.class.php	/^                    $name=$key . "." . $iter;$/;"	v
 name	AWS/ec2.class.php	/^                $name=$key . "." . $iter;$/;"	v
 name	DVB/dvblistings.functions.php	/^                        $name=trim($ctmp[$x]);$/;"	v

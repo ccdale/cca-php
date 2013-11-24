@@ -9,29 +9,45 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Saturday 23 November 2013, 11:32:33
+ * Last Modified: Sunday 24 November 2013, 12:46:06
  * Version: $Id$
  */
 
 class EC2 extends Base
 {
-    private $params;
-    private $gstr;
-    private $qstr;
-    private $sig;
-    private $url;
-    private $accesskey;
-    private $secretkey;
-    private $region;
-    private $rawdata;
-    private $instances;
+    protected $params;
+    protected $gstr;
+    protected $qstr;
+    protected $sig;
+    protected $url;
+    protected $accesskey;
+    protected $secretkey;
+    protected $region;
+    protected $rawxml;
+    protected $rawdata;
+    protected $data;
+    protected $ckeys;
+    protected $csets;
 
-    public function __construct($logg=null,$accesskey="",$secretkey="",$region="eu-west-1") /*{{{*/
+    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1") /*{{{*/
     {
         parent::__construct($logg);
         $this->setAccessKey($accesskey);
         $this->setSecretKey($secretkey);
         $this->setRegion($region);
+        $this->ckeys=array(
+            "instances"=>array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized"),
+            "iamages"=>array("imageId","imageLocation","imageState","imageOwnerId","isPublic","architecture","imageType","platform","imageOwnerAlias","rootDeviceType","blockDeviceMapping","virtualizationType","hypervisor")
+        );
+        $this->csets=array(
+            "instances"=>array(
+                array("key"=>"securityGroups","xkey"=>"groupSet","namekey"=>"groupName","datakey"=>"groupId"),
+                array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
+            ),
+            "images"=>array(
+                array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
+            )
+        );
     } /*}}}*/
     public function __destruct() /*{{{*/
     {
@@ -60,56 +76,15 @@ class EC2 extends Base
             $this->region=$region;
         }
     } /*}}}*/
-    public function di()/*{{{*/ /*{{{*/
+    public function getRawXML()/*{{{*/
     {
-        return $this->describeInstances();
-    }/*}}}*/ /*}}}*/
-    public function describeInstances() /*{{{*/
-    {
-        $ret=false;
-        $this->initParams();
-        $this->params["Action"]="DescribeInstances";
-        $this->rawdata=$this->doCurl();
-        if($this->decodeRawInstances()){
-            $ret=$this->instances;
-        }
-        return $ret;
-    } /*}}}*/
-    /**
-     * da
-     * shorthand for describeAMIs (images)
-     */
-    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
-    {
-        return $this->describeAMIs($executableby,$imageId,$owner,$filter);
-    }/*}}}*/
-    /**
-     * describeAMIs
-     * list your ami images
-     *
-     * see: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeImages.html
-     * returns: array of ami images
-     *
-     * $executableby: string or array of strings
-     * $imageid: string or array of strings
-     * $owner: string or array of strings
-     * $filter: array of key=>val pairs
-     */
-    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)/*{{{*/
-    {
-        $ret=false;
-        $this->initParams();
-        $this->addParam("Action","DescribeImages");
-        $this->addParam("ExecutableBy",$executableby);
-        $this->addParam("ImageId",$imageid);
-        $this->addParam("Owner",$owner);
-        $this->addFilterParam("Filter",$filter);
+        return $this->rawxml;
     }/*}}}*/
     public function getRawData() /*{{{*/
     {
         return $this->rawdata;
     } /*}}}*/
-    private function initParams() /*{{{*/
+    protected function initParams() /*{{{*/
     {
         $this->params=array(
             "AWSAccessKeyId"=>$this->accesskey,
@@ -127,7 +102,7 @@ class EC2 extends Base
      * $key: string
      * $var: false, string or array of strings
      */
-    private function addParam($key,$var)/*{{{*/
+    protected function addParam($key,$var)/*{{{*/
     {
         $iter=1;
         if(false!==$var){
@@ -152,28 +127,30 @@ class EC2 extends Base
      * $filter: array("filtername"=>"filterval","filtername"=>array("filterval","filterval"))
      *
      */
-    private function addFilterParam($filter)/*{{{*/
+    protected function addFilterParam($filter)/*{{{*/
     {
         if(false!==($cn=$this->ValidArray($filter))){
             $iter=1;
             foreach($filter as $key=>$val){
                 if(false!==($cn=$this->ValidArray($val))){
                     $miter=1;
+                    $name="Filter" . ". " . $iter . ".";
                     foreach($val as $item){
-                        $name="Filter" . "." . $iter . "." . $key . "." . $miter;
-                        $this->addParam($name,$item);
-                        $iter++;
+                        $this->addParam($name . "Name",$key);
+                        $this->addParam($name . "Value" . "." . $miter,$item);
                         $miter++;
                     }
+                    $iter++;
                 }else{
-                    $name="Filter" . ". " . $iter . "." . $key;
-                    $this->addParam($name,$val);
+                    $name="Filter" . ". " . $iter . ".";
+                    $this->addParam($name . "Name",$key);
+                    $this->addParam($name . "Value.1",$val);
                     $iter++;
                 }
             }
         }
     }/*}}}*/
-    private function buildGetString() /*{{{*/
+    protected function buildGetString() /*{{{*/
     {
         uksort($this->params,"strcmp");
         $this->gstr="";
@@ -187,75 +164,63 @@ class EC2 extends Base
         }
         $this->gstr=str_replace("%7E","~",$this->gstr);
     } /*}}}*/
-    private function signRequest()/*{{{*/
+    protected function signRequest()/*{{{*/
     {
         $this->buildGetString();
         $this->qstr="GET\nec2." . $this->region . ".amazonaws.com\n/\n" . $this->gstr;
         $this->sig=urlencode(base64_encode(hash_hmac("sha256",$this->qstr,$this->secretkey,true)));
         $this->url="https://ec2." . $this->region . ".amazonaws.com/?" . $this->gstr . "&Signature=" . $this->sig;
     }/*}}}*/
-    private function doCurl() /*{{{*/
+    protected function doCurl() /*{{{*/
     {
         $this->signRequest();
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        $res=curl_exec($ch);
-        /*
-         * the result is xml
-         * the json dance will convert that into a php array
-         */
-        $arr=json_decode(json_encode(simplexml_load_string($res)),true);
-        return $arr;
+        if(false!==($this->rawxml=curl_exec($ch))){
+            /*
+             * the result is xml
+             * the json dance will convert that into a php array
+             */
+            $arr=json_decode(json_encode(simplexml_load_string($res)),true);
+            return $arr;
+        }
+        return false;
     } /*}}}*/
-    private function decodeRawInstances() /*{{{*/
+    protected function flattenInstance($iarr) /*{{{*/
     {
         $ret=false;
-        if(isset($this->rawdata["requestId"]) && isset($this->rawdata["reservationSet"])){
-            $this->instances=array();
-            foreach($this->rawdata["reservationSet"]["item"] as $iset){
-                $tinst=$this->flattenInstance($iset["instancesSet"]["item"]);
-                $this->instances[$tinst["instanceId"]]=$tinst;
+        if(false!==($tinst=$this->flattenData($iarr,"instances"))){
+            $tinst["state"]=$iarr["instanceState"]["name"];
+            $tinst["statecode"]=$iarr["instanceState"]["code"];
+            $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
+            if(isset($tinst["tags"]["Name"])){
+                $tinst["Name"]=$tinst["tags"]["Name"];
+            }else{
+                $tinst["Name"]=$tinst["instanceId"];
             }
-            $ret=true;
+            $ret=$tinst;
         }
         return $ret;
     } /*}}}*/
-    private function flattenInstance($iarr) /*{{{*/
+    protected function flattenData($iarr,$datatype)/*{{{*/
     {
-        $ckeys=array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized");
-        $tinst=$this->copyKeys($ckeys,$iarr);
-        if(isset($iarr["groupSet"])){
-            if(isset($iarr["groupSet"]["item"])){
-                $tinst["securityGroups"]=$this->flattenSet($iarr["groupSet"]["item"],"groupName","groupId");
+        $ret=false;
+        if(false!==($cn=$this->ValidArray($iarr))){
+            if(isset($this->ckeys[$datatype])){
+                if(false!==($tinst=$this->copyKeys($this->ckeys[$datatype],$iarr))){
+                    if(isset($this->csets[$datatype])){
+                        foreach($this->csets[$datatype] as $set){
+                            $tinst[$set["key"]]=flattenSet($iarr[$set["xkey"]],$set["namekey"],$set["datakey"]);
+                        }
+                    }
+                }
             }
+            $ret=$tinst;
         }
-        if(isset($iarr["tagSet"])){
-            if(isset($iarr["tagSet"]["item"])){
-                $tinst["tags"]=$this->flattenSet($iarr["tagSet"]["item"],"key","value");
-            }
-        }
-        $tinst["state"]=$iarr["instanceState"]["name"];
-        $tinst["statecode"]=$iarr["instanceState"]["code"];
-        $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
-        if(isset($tinst["tags"]["Name"])){
-            $tinst["Name"]=$tinst["tags"]["Name"];
-        }else{
-            $tinst["Name"]=$tinst["instanceId"];
-        }
-        return $tinst;
-    } /*}}}*/
-    private function copyKeys($keys,$arr) /*{{{*/
-    {
-        $oarr=array();
-        foreach($keys as $key){
-            if(isset($arr[$key])){
-                $oarr[$key]=$arr[$key];
-            }
-        }
-        return $oarr;
-    } /*}}}*/
-    private function flattenSet($arr,$namekey,$datakey) /*{{{*/
+        return $ret;
+    }/*}}}*/
+    protected function flattenSet($arr,$namekey,$datakey) /*{{{*/
     {
         $oarr=array();
         if(is_array($arr)){
@@ -268,6 +233,19 @@ class EC2 extends Base
                     if(isset($set[$namekey]) && isset($set[$datakey])){
                         $oarr[$set[$namekey]]=$set[$datakey];
                     }
+                }
+            }
+        }
+        return $oarr;
+    } /*}}}*/
+    protected function copyKeys($keys,$arr) /*{{{*/
+    {
+        $oarr=false;
+        if(false!==($cn=$this->ValidArray($arr))){
+            $oarr=array();
+            foreach($keys as $key){
+                if(isset($arr[$key])){
+                    $oarr[$key]=$arr[$key];
                 }
             }
         }
