@@ -9,7 +9,7 @@
  * aws-example.php
  *
  * Started: Sunday 24 November 2013, 12:48:56
- * Last Modified: Monday 25 November 2013, 04:04:23
+ * Last Modified: Monday 25 November 2013, 04:36:01
  * Revision: $Id$
  * Version: 0.00
  */
@@ -29,6 +29,8 @@ if(file_exists($credentials)){
 }
 
 /*
+ * get ami list
+ *
 $images=new EC2Images(false,$accesskey,$secret,$region);
 if(false===($arr=$images->da(false,false,"self"))){
     $tmp=$images->getRawData();
@@ -36,6 +38,10 @@ if(false===($arr=$images->da(false,false,"self"))){
 }else{
     print_r($arr);
 }
+ */
+/*
+ * get instances list
+ *
 $instances=new EC2Instances(false,$accesskey,$secret,$region);
 if(false===($arr=$instances->di())){
     print "failed\n";
@@ -45,10 +51,17 @@ if(false===($arr=$instances->di())){
     print_r($arr);
 }
  */
+/*
+ * create tags
+ *
 $tags=new EC2Tags(false,$accesskey,$secret,$region);
-$arr=$tags->dt(array("resource-id"=>"i-90b954de","resource-type"=>"instance"));
-print_r($tags->getRawXML());
-print "\n";
-print_r($tags->getRawData());
-print_r($arr);
+if(false===($ret=$tags->ct("<INSTANCEID>",array("group"=>"search")))){
+    print "failed\n";
+    print_r($tags->getRawXML());
+    print "\n";
+}else{
+    $arr=$tags->dt(array("resource-id"=>"<INSTANCEID>","resource-type"=>"instance"));
+    print_r($arr);
+}
+ */
 ?>

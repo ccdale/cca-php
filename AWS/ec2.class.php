@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Monday 25 November 2013, 04:08:30
+ * Last Modified: Monday 25 November 2013, 04:36:45
  * Version: $Id$
  */
 
@@ -139,6 +139,7 @@ class EC2 extends Base
     protected function addFilterParam($filter,$istagging=false)
     {
         $request=$istagging?"Tag":"Filter";
+        $reqkey=$istagging?"Key":"Name";
         if(false!==($cn=$this->ValidArray($filter))){
             $iter=1;
             foreach($filter as $key=>$val){
@@ -146,14 +147,14 @@ class EC2 extends Base
                     $miter=1;
                     $name=$request . "." . $iter . ".";
                     foreach($val as $item){
-                        $this->params[$name . "Name"]=$key;
+                        $this->params[$name . $reqkey]=$key;
                         $this->params[$name . "Value" . "." . $miter]=$item;
                         $miter++;
                     }
                     $iter++;
                 }else{
                     $name=$request . "." . $iter . ".";
-                    $this->params[$name . "Name"]=$key;
+                    $this->params[$name . $reqkey]=$key;
                     $this->params[$name . "Value.1"]=$val;
                     $iter++;
                 }
@@ -184,7 +185,7 @@ class EC2 extends Base
     protected function doCurl() /*{{{*/
     {
         $this->signRequest();
-        print $this->url . "\n";
+        // print $this->url . "\n";
         $ch=curl_init();
         curl_setopt($ch,CURLOPT_URL,$this->url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);

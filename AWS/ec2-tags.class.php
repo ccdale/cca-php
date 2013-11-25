@@ -9,7 +9,7 @@
  * ec2-tags.class.php
  *
  * Started: Sunday 24 November 2013, 19:18:17
- * Last Modified: Monday 25 November 2013, 04:09:48
+ * Last Modified: Monday 25 November 2013, 04:26:18
  * Revision: $Id$
  * Version: 0.00
  */
@@ -52,6 +52,7 @@ class EC2Tags extends EC2
         if(false!==($cn=$this->ValidStr($resourceid))){
             if(false!==($cn=$this->ValidArray($tags))){
                 $this->initParams("CreateTags");
+                $this->params["ResourceId"]=$resourceid;
                 $this->addFilterParam($tags,true);
                 if(false!==($this->rawdata=$this->doCurl())){
                     if(isset($this->rawdata["requestId"]) && isset($this->rawdata["return"])){
