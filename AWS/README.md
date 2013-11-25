@@ -8,18 +8,18 @@ put your aws credentials in $HOME/.aws.conf.php (see template).  See aws-example
 .aws.conf.php template
 ~~~~~~~~~~~~~~~~~~~~~~
 
-```php
+'''php
 <?php
 $accesskey="<AWS ACCESS KEY ID>";
 $secret="<AWS SECRET KEY>";
 $region="eu-west-1";
 ?>
-```
+'''
 
 Example usage
 ~~~~~~~~~~~~~
 
-```php
+'''php
 /*
  * get ami list
  */
@@ -53,4 +53,4 @@ if(false===($ret=$tags->ct("<INSTANCEID>",array("group"=>"search")))){
     $arr=$tags->dt(array("resource-id"=>"<INSTANCEID>","resource-type"=>"instance"));
     print_r($arr);
 }
-```
+'''
