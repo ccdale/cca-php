@@ -5,6 +5,18 @@ Fledgeling classes for chatting to the amazon aws apis.
 
 put your aws credentials in $HOME/.aws.conf.php (see template).  See aws-example.php for initial usage.
 
+Currently, you can
+
+List:
+    AMIs
+    Instances
+    Tags
+
+Create:
+    Tags
+
+Coming next: create/run instances.
+
 .aws.conf.php template
 ----------------------
 
