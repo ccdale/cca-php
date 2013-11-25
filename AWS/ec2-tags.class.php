@@ -9,7 +9,7 @@
  * ec2-tags.class.php
  *
  * Started: Sunday 24 November 2013, 19:18:17
- * Last Modified: Sunday 24 November 2013, 20:08:46
+ * Last Modified: Monday 25 November 2013, 04:09:48
  * Revision: $Id$
  * Version: 0.00
  */
@@ -78,8 +78,8 @@ class EC2Tags extends EC2
             $this->initParams("DescribeTags");
             $this->addFilterParam($filter);
             if(false!==($this->rawdata=$this->doCurl())){
-                if(isset($this->rawdata["requestId"]) && isset($this->rawdata["tagSet"])){
-                    $this->data=array("tags"=>$this->flattenSet($this->rawdata["tagSet"],"key","value"));
+                if(isset($this->rawdata["requestId"]) && isset($this->rawdata["tagSet"]) && isset($this->rawdata["tagSet"]["item"])){
+                    $this->data=array("tags"=>$this->flattenSet($this->rawdata["tagSet"]["item"],"key","value"));
                     $ret=$this->data;
                 }
             }

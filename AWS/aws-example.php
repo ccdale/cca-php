@@ -9,7 +9,7 @@
  * aws-example.php
  *
  * Started: Sunday 24 November 2013, 12:48:56
- * Last Modified: Sunday 24 November 2013, 20:11:20
+ * Last Modified: Monday 25 November 2013, 04:04:23
  * Revision: $Id$
  * Version: 0.00
  */
@@ -46,7 +46,9 @@ if(false===($arr=$instances->di())){
 }
  */
 $tags=new EC2Tags(false,$accesskey,$secret,$region);
-$arr=$tags->dt(array("resource-id"=>"i-90b954de","resurce-type"=>"instance"));
+$arr=$tags->dt(array("resource-id"=>"i-90b954de","resource-type"=>"instance"));
 print_r($tags->getRawXML());
+print "\n";
+print_r($tags->getRawData());
 print_r($arr);
 ?>

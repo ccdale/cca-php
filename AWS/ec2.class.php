@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Sunday 24 November 2013, 20:06:55
+ * Last Modified: Monday 25 November 2013, 04:08:30
  * Version: $Id$
  */
 
@@ -101,15 +101,14 @@ class EC2 extends Base
             $this->params["Action"]=$action;
         }
     } /*}}}*/
-    /**
-     * addParam
+    /** addParam {{{
      * adds a string or array of strings to the parameters array
      *
      * returns: nothing
      * $key: string
      * $var: false, string or array of strings
      */
-    protected function addParam($key,$var)/*{{{*/
+    protected function addParam($key,$var)
     {
         $iter=1;
         // TODO: will this allow empty tags?
@@ -121,6 +120,7 @@ class EC2 extends Base
                     $iter++;
                 }
             }elseif(false!==($cn=$this->ValidStr($var))){
+                // TODO: is this right, do we need to add the number
                 $name=$key . "." . $iter;
                 $this->params[$name]=$var;
             }
@@ -144,17 +144,17 @@ class EC2 extends Base
             foreach($filter as $key=>$val){
                 if(false!==($cn=$this->ValidArray($val))){
                     $miter=1;
-                    $name=$request . ". " . $iter . ".";
+                    $name=$request . "." . $iter . ".";
                     foreach($val as $item){
-                        $this->addParam($name . "Name",$key);
-                        $this->addParam($name . "Value" . "." . $miter,$item);
+                        $this->params[$name . "Name"]=$key;
+                        $this->params[$name . "Value" . "." . $miter]=$item;
                         $miter++;
                     }
                     $iter++;
                 }else{
-                    $name=$request . ". " . $iter . ".";
-                    $this->addParam($name . "Name",$key);
-                    $this->addParam($name . "Value.1",$val);
+                    $name=$request . "." . $iter . ".";
+                    $this->params[$name . "Name"]=$key;
+                    $this->params[$name . "Value.1"]=$val;
                     $iter++;
                 }
             }
@@ -238,12 +238,11 @@ class EC2 extends Base
     protected function flattenSet($arr,$namekey,$datakey) /*{{{*/
     {
         $oarr=array();
-        if(is_array($arr)){
-            $cn=count($arr);
+        if(false!==($cn=$this->ValidArray($arr))){
             if($cn>0){
-                if(!isset($arr[0])){
-                    $arr=array(0=>$arr);
-                }
+                // if(!isset($arr[0])){
+                    // $arr=array(0=>$arr);
+                // }
                 foreach($arr as $set){
                     if(isset($set[$namekey]) && isset($set[$datakey])){
                         $oarr[$set[$namekey]]=$set[$datakey];
