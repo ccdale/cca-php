@@ -9,7 +9,7 @@
  * aws-example.php
  *
  * Started: Sunday 24 November 2013, 12:48:56
- * Last Modified: Monday 25 November 2013, 04:36:01
+ * Last Modified: Sunday  8 December 2013, 07:22:34
  * Revision: $Id$
  * Version: 0.00
  */
@@ -21,6 +21,7 @@ require_once "$AWSLIB/ec2.class.php";
 require_once "$AWSLIB/ec2-instances.class.php";
 require_once "$AWSLIB/ec2-images.class.php";
 require_once "$AWSLIB/ec2-tags.class.php";
+require_once "$AWSLIB/ec2-create-instance.class.php";
 
 $home=getenv("HOME");
 $credentials="$home/.aws.conf.php";
@@ -64,4 +65,9 @@ if(false===($ret=$tags->ct("<INSTANCEID>",array("group"=>"search")))){
     print_r($arr);
 }
  */
+/*
+ * create instance
+ */
+$settings=array("SecurityGroupId"=>array(
+$ci=new EC2CreateInstance(false,$accesskey,$secret,$region);
 ?>

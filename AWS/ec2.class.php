@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Monday 25 November 2013, 04:36:45
+ * Last Modified: Saturday  7 December 2013, 10:18:38
  * Version: $Id$
  */
 
@@ -101,7 +101,33 @@ class EC2 extends Base
             $this->params["Action"]=$action;
         }
     } /*}}}*/
-    /** addParam {{{
+    /** addNParam {{{
+     * adds a string or array of strings to the parameters array, numbering the keys
+     * as well as the values.
+     *
+     * returns: nothing
+     * $key: string
+     * $var: false, string or array of strings
+     */
+    protected function addNParam($key,$var)
+    {
+        $iter=1;
+        // TODO: will this allow empty tags?
+        if(false!==$var){
+            if(false!==($cn=$this->ValidArray($var))){
+                foreach($var as $item){
+                    $name=$key . "." . $iter;
+                    $this->params[$name]=$item;
+                    $iter++;
+                }
+            }elseif(false!==($cn=$this->ValidStr($var))){
+                // TODO: is this right, do we need to add the number
+                $name=$key . "." . $iter;
+                $this->params[$name]=$var;
+            }
+        }
+    }/*}}}*/
+    /** addParam
      * adds a string or array of strings to the parameters array
      *
      * returns: nothing
@@ -120,9 +146,7 @@ class EC2 extends Base
                     $iter++;
                 }
             }elseif(false!==($cn=$this->ValidStr($var))){
-                // TODO: is this right, do we need to add the number
-                $name=$key . "." . $iter;
-                $this->params[$name]=$var;
+                $this->params[$key]=$var;
             }
         }
     }/*}}}*/

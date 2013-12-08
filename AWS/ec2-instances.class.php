@@ -9,7 +9,7 @@
  * ec2-instances.class.php
  *
  * Started: Sunday 24 November 2013, 12:23:29
- * Last Modified: Sunday 24 November 2013, 19:47:28
+ * Last Modified: Saturday  7 December 2013, 10:29:05
  * Revision: $Id$
  * Version: 0.00
  */
@@ -61,7 +61,7 @@ class EC2Instances extends EC2
         $ret=false;
         $this->initParams("DescribeInstances");
         if(false!==$instanceid){
-            $this->addParam("InstanceId",$instanceid);
+            $this->addNParam("InstanceId",$instanceid);
         }
         $this->addFilterParam($filter);
         if(false!==($this->rawdata=$this->doCurl())){
