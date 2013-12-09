@@ -9,7 +9,7 @@
  * aws-example.php
  *
  * Started: Sunday 24 November 2013, 12:48:56
- * Last Modified: Sunday  8 December 2013, 07:22:34
+ * Last Modified: Sunday  8 December 2013, 13:06:19
  * Revision: $Id$
  * Version: 0.00
  */
@@ -51,7 +51,7 @@ if(false===($arr=$instances->di())){
 }else{
     print_r($arr);
 }
- */
+*/
 /*
  * create tags
  *
@@ -68,6 +68,33 @@ if(false===($ret=$tags->ct("<INSTANCEID>",array("group"=>"search")))){
 /*
  * create instance
  */
-$settings=array("SecurityGroupId"=>array(
-$ci=new EC2CreateInstance(false,$accesskey,$secret,$region);
+$settings=array(
+    "SecurityGroupId"=>array(
+        "sg-01e3f563"
+    ),
+    "KeyName"=>"ccaaws",
+    "InstanceType"=>"t1.micro",
+    // "SubnetId"=>"subnet-d5d5fea1",
+    "UserData"=>"instancesetup.sh",
+    "ImageId"=>"ami-c7ec0eb0",
+    "Hostnames"=>array(
+        "prod-test-3",
+        "prod-test-4"
+    )
+);
+$ci=new EC2CreateInstance(false,$accesskey,$secret,$region,$settings);
+$arr=$ci->runInstance();
+// print_r($arr);
+
+/*
+ * get instances list
+ */
+$instances=new EC2Instances(false,$accesskey,$secret,$region);
+if(false===($arr=$instances->di())){
+    print "failed\n";
+    $tmp=$instances->getRawXML();
+    print "$tmp\n";
+}else{
+    print_r($arr);
+}
 ?>

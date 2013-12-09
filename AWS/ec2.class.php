@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Saturday  7 December 2013, 10:18:38
+ * Last Modified: Sunday  8 December 2013, 09:20:44
  * Version: $Id$
  */
 
@@ -203,6 +203,7 @@ class EC2 extends Base
     {
         $this->buildGetString();
         $this->qstr="GET\nec2." . $this->region . ".amazonaws.com\n/\n" . $this->gstr;
+        // print $this->qstr . "\n";
         $this->sig=urlencode(base64_encode(hash_hmac("sha256",$this->qstr,$this->secretkey,true)));
         $this->url="https://ec2." . $this->region . ".amazonaws.com/?" . $this->gstr . "&Signature=" . $this->sig;
     }/*}}}*/
@@ -220,8 +221,12 @@ class EC2 extends Base
              * the result is xml
              * the json dance will convert that into a php array
              */
+            // print_r($this->rawxml);
+            // print "\n";
             $arr=json_decode(json_encode(simplexml_load_string($this->rawxml)),true);
             return $arr;
+        }else{
+            // print "curl returned false\n";
         }
         return false;
     } /*}}}*/
