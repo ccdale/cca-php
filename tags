@@ -6,6 +6,7 @@
 !_TAG_PROGRAM_VERSION	5.9~svn20110310	//
 ALink	HTML/link.class.php	/^	function ALink($get,$text,$target="",$class="xBody",$new=false,$atts="")$/;"	f
 ALink	HTML/link.class.php	/^class ALink$/;"	c
+AWSLIB	AWS/aws-example.php	/^$AWSLIB=dirname(__FILE__);$/;"	v
 Actor	DVB/actor.class.php	/^class Actor extends Data$/;"	c
 AdapterDb	DVB/adapterdb.class.php	/^class AdapterDb$/;"	c
 AddRow	HTML/class.table.php	/^    function AddRow ()$/;"	f
@@ -120,6 +121,10 @@ Debug	DVB/livetvts.php	/^function Debug($key="",$val="")\/*{{{*\/$/;"	f
 Duplicate	Media/duplicatemedia.class.php	/^class Duplicate extends Base$/;"	c
 Dvbstreamer	DVB/dvbstreamer.class.php	/^class Dvbstreamer$/;"	c
 EC2	AWS/ec2.class.php	/^class EC2 extends Base$/;"	c
+EC2CreateInstance	AWS/ec2-create-instance.class.php	/^class EC2CreateInstance extends EC2$/;"	c
+EC2Images	AWS/ec2-images.class.php	/^class EC2Images extends EC2$/;"	c
+EC2Instances	AWS/ec2-instances.class.php	/^class EC2Instances extends EC2$/;"	c
+EC2Tags	AWS/ec2-tags.class.php	/^class EC2Tags extends EC2$/;"	c
 EITtoTS	DVB/dvblistings.functions.php	/^function EITtoTS($eittimestring="")$/;"	f
 Epgdb	DVB/epgdb.class.php	/^class Epgdb$/;"	c
 Extern	Shell/extern.class.php	/^class Extern$/;"	c
@@ -138,6 +143,7 @@ HEADCOLOUR	HTML/class.table.php	/^            define("HEADCOLOUR","#0000ff");$/;
 Hidden	HTML/input_field.class.php	/^ function Hidden($name,$value)$/;"	f
 InputField	HTML/input_field.class.php	/^ function InputField($type="",$name="",$value="",$ext=false,$label="",$align_right=false)$/;"	f
 InputField	HTML/input_field.class.php	/^class InputField$/;"	c
+LIB	AWS/aws-example.php	/^$LIB=dirname($AWSLIB);$/;"	v
 Lame	DVB/lame.class.php	/^class Lame extends Extern$/;"	c
 Lame	Rip/lame.class.php	/^class Lame$/;"	c
 Logging	LOG/logging.class.php	/^class Logging$/;"	c
@@ -229,7 +235,11 @@ WLogging	LOG/website_logging.class.php	/^class WLogging$/;"	c
 WhereClause	DB/mysql.class.php	/^ function WhereClause($chkfield,$id=0)$/;"	f
 XMLTVFILE	DVB/livetv.php	/^    define("XMLTVFILE",$config["xmltvfile"]);$/;"	d
 XMLTVFILE	DVB/livetvts.php	/^    define("XMLTVFILE",$config["xmltvfile"]);$/;"	d
-__construct	AWS/ec2.class.php	/^    public function __construct($logg=null,$accesskey="",$secretkey="",$region="eu-west-1") \/*{{{*\/$/;"	f
+__construct	AWS/ec2-create-instance.class.php	/^    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1",$settings=false,$shortcircuit=false)$/;"	f
+__construct	AWS/ec2-images.class.php	/^    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")$/;"	f
+__construct	AWS/ec2-instances.class.php	/^    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")$/;"	f
+__construct	AWS/ec2-tags.class.php	/^    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")$/;"	f
+__construct	AWS/ec2.class.php	/^    public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1") \/*{{{*\/$/;"	f
 __construct	DB/simple-mysql.class.php	/^    public function __construct($logg=false,$host="",$user="",$pass="",$db="",$force=false) \/*{{{*\/$/;"	f
 __construct	DVB/actor.class.php	/^    public function __construct($name="",$log=false)$/;"	f
 __construct	DVB/adapterdb.class.php	/^    public function __construct($dvbstreamerhome,$adapternum=0)$/;"	f
@@ -273,6 +283,10 @@ __construct	Unix/process.class.php	/^    function __construct($pid=0) \/\/ {{{$/
 __construct	Unix/processtable.class.php	/^    function __construct() \/\/ {{{$/;"	f
 __construct	base.class.php	/^    public function __construct($log=false)\/*{{{*\/$/;"	f
 __construct	tools.class.php	/^    public function __construct($logg=false)\/*{{{*\/$/;"	f
+__destruct	AWS/ec2-create-instance.class.php	/^    public function __destruct()\/*{{{*\/$/;"	f
+__destruct	AWS/ec2-images.class.php	/^    public function __destruct()\/*{{{*\/$/;"	f
+__destruct	AWS/ec2-instances.class.php	/^    public function __destruct()\/*{{{*\/$/;"	f
+__destruct	AWS/ec2-tags.class.php	/^    public function __destruct()\/*{{{*\/$/;"	f
 __destruct	AWS/ec2.class.php	/^    public function __destruct() \/*{{{*\/$/;"	f
 __destruct	DB/data.class.php	/^    public function __destruct()$/;"	f
 __destruct	DB/simple-mysql.class.php	/^    public function __destruct() \/*{{{*\/$/;"	f
@@ -365,8 +379,9 @@ a	DVB/program.class.php	/^                    $a=new Actor($aname);$/;"	v
 a	DVB/program.class.php	/^                $a=new Actor($aid["aid"]);$/;"	v
 aarr	DVB/actor.class.php	/^            $aarr=$this->mx->getAllResults("*","actor",1,0,$sql,MYSQL_ASSOC);$/;"	v
 access	DVB/livetv.php	/^                    $access=$info["Conditional Access?"]=="Free to Air"?"y":"n";$/;"	v
+accesskey	AWS/TEMPLATE_.aws.conf.php	/^$accesskey="<ACCESS KEY ID>";$/;"	v
 accesskey	AWS/ec2.class.php	/^            $this->accesskey=$accessKey;$/;"	v
-accesskey	AWS/ec2.class.php	/^    private $accesskey;$/;"	v
+accesskey	AWS/ec2.class.php	/^    protected $accesskey;$/;"	v
 activeActors	DVB/actor.class.php	/^    public function activeActors()$/;"	f
 activeLetter	DVB/actor.class.php	/^    public function activeLetter()$/;"	f
 actorPrograms	DVB/actor.class.php	/^    public function actorPrograms()$/;"	f
@@ -374,12 +389,13 @@ actorids	DVB/program.class.php	/^    private $actorids=false;$/;"	v
 actorsByLetter	DVB/actor.class.php	/^    public function actorsByLetter($letter="a")$/;"	f
 addFile	DVB/projectx.class.php	/^    public function addFile($file="")$/;"	f
 addFile	DVB/rprog.class.php	/^    public function addFile()$/;"	f
-addFilterParam	AWS/ec2.class.php	/^    private function addFilterParam($filter)\/*{{{*\/$/;"	f
+addFilterParam	AWS/ec2.class.php	/^    protected function addFilterParam($filter,$istagging=false)$/;"	f
 addHid	HTML/form.class.php	/^	function addHid($name,$value)$/;"	f
 addHidA	HTML/form.class.php	/^	function addHidA($hid_arr="")$/;"	f
 addHidden	HTML/form.class.php	/^	function addHidden($hid)$/;"	f
+addNParam	AWS/ec2.class.php	/^    protected function addNParam($key,$var)$/;"	f
 addOption	HTML/select_field.class.php	/^	function addOption($v,$t,$s=false,$with_auto_submit=false)$/;"	f
-addParam	AWS/ec2.class.php	/^    private function addParam($key,$var)\/*{{{*\/$/;"	f
+addParam	AWS/ec2.class.php	/^    protected function addParam($key,$var)$/;"	f
 addPid	DVB/actor.class.php	/^    public function addPid($pid=0)$/;"	f
 addRow	HTML/form.class.php	/^	function addRow($label,$type="text",$name="",$value="",$size="",$ext=false,$right_align=false)$/;"	f
 addSingleShot	DVB/program.class.php	/^    public function addSingleShot()$/;"	f
@@ -464,8 +480,9 @@ arec	DVB/channel.class.php	/^        $arec=$this->mx->getAllResults("*","channel
 arec	DVB/channel.class.php	/^        $arec=$this->mx->getAllResults("*","channel","type","radio",$ext,MYSQL_BOTH);$/;"	v
 arec	DVB/channel.class.php	/^        $arec=$this->mx->getAllResults("*","channel","type","tv",$ext,MYSQL_BOTH);$/;"	v
 arec	DVB/channel.class.php	/^        $arec=$this->mx->getAllResults("*","channel","type",$type,$ext,MYSQL_BOTH);$/;"	v
-arr	AWS/ec2.class.php	/^                    $arr=array(0=>$arr);$/;"	v
-arr	AWS/ec2.class.php	/^        $arr=json_decode(json_encode(simplexml_load_string($res)),true);$/;"	v
+arr	AWS/aws-example.php	/^    $arr=$tags->dt(array("resource-id"=>"<INSTANCEID>","resource-type"=>"instance"));$/;"	v
+arr	AWS/aws-example.php	/^$arr=$ci->runInstance();$/;"	v
+arr	AWS/ec2.class.php	/^            $arr=json_decode(json_encode(simplexml_load_string($this->rawxml)),true);$/;"	v
 arr	App/www.php	/^    $arr=array_merge($_GET,$_POST);$/;"	v
 arr	App/www.php	/^    $arr=false;$/;"	v
 arr	DB/data.class.php	/^            $this->arr=$carr;$/;"	v
@@ -553,6 +570,7 @@ autoclass	HTML/tag.class.php	/^        $this->autoclass=$autoclass;$/;"	v
 autoclass	HTML/tag.class.php	/^    var $autoclass;$/;"	v
 autoremux	DVB/rprog.class.php	/^            $this->autoremux=true;$/;"	v
 autoremux	DVB/rprog.class.php	/^    private $autoremux=false;$/;"	v
+availabilityzone	AWS/ec2-create-instance.class.php	/^    private $availabilityzone=false;$/;"	v
 aviFileSize	DVB/rprog.class.php	/^    public function aviFileSize()$/;"	f
 batch	Rip/cdripper.class.php	/^    private $batch="\/usr\/bin\/cdparanoia -B -q 2>&1";$/;"	v
 batchRip	Rip/cdripper.class.php	/^    public function batchRip($background=true)$/;"	f
@@ -584,7 +602,7 @@ breaknext	Shell/cli.class.php	/^            $breaknext=false;$/;"	v
 breaknext	cli.php	/^                $breaknext=true;$/;"	v
 breaknext	cli.php	/^        $breaknext=false;$/;"	v
 buildFileList	DVB/tsprocessor.class.php	/^    private function buildFileList()$/;"	f
-buildGetString	AWS/ec2.class.php	/^    private function buildGetString() \/*{{{*\/$/;"	f
+buildGetString	AWS/ec2.class.php	/^    protected function buildGetString() \/*{{{*\/$/;"	f
 buildMenu	Shell/cli.class.php	/^    private function buildMenu()\/*{{{*\/$/;"	f
 buildTag	Rip/lame.class.php	/^    private function buildTag()$/;"	f
 byMux	DVB/channel.class.php	/^    public function byMux($mux,$favs=true,$withencrypted=false,$type="tv")$/;"	f
@@ -748,6 +766,7 @@ checkPids	DVB/channel.class.php	/^    public function checkPids()$/;"	f
 checkPids	DVB/recording.class.php	/^    private function checkPids()$/;"	f
 checkReply	DVB/dvbctrl.class.php	/^    private function checkReply($reply)\/*{{{*\/$/;"	f
 checkSetDateFromDVB	DVB/livetv.php	/^function checkSetDateFromDVB()\/*{{{*\/$/;"	f
+checkSettings	AWS/ec2-create-instance.class.php	/^    private function checkSettings()\/*{{{*\/$/;"	f
 checkStartRecording	DVB/livetv.php	/^function checkStartRecording($outputstatus=false)\/*{{{*\/$/;"	f
 checkStartRecording	DVB/livetvts.php	/^function checkStartRecording($outputstatus=false)\/*{{{*\/$/;"	f
 checkStartStreamingChannel	DVB/livetv.php	/^function checkStartStreamingChannel()\/*{{{*\/$/;"	f
@@ -775,8 +794,11 @@ checknested	tools.class.php	/^                                        $checknest
 checknested	tools.class.php	/^                                $checknested=true;$/;"	v
 chkfield	DB/data.class.php	/^        $this->chkfield=$chkfield_in;$/;"	v
 chkfield	DB/data.class.php	/^    var $chkfield;$/;"	v
+ci	AWS/aws-example.php	/^$ci=new EC2CreateInstance(false,$accesskey,$secret,$region,$settings);$/;"	v
 cid	DVB/dvblistings.functions.php	/^    $cid=null;$/;"	v
-ckeys	AWS/ec2.class.php	/^        $ckeys=array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized");$/;"	v
+ckeys	AWS/ec2.class.php	/^        $this->ckeys=array($/;"	v
+ckeys	AWS/ec2.class.php	/^        $this->ckeys=array();$/;"	v
+ckeys	AWS/ec2.class.php	/^    protected $ckeys;$/;"	v
 class	DVB/program.class.php	/^                        $class="green";$/;"	v
 class	DVB/program.class.php	/^                        $class="red";$/;"	v
 class	HTML/link.class.php	/^		$this->class=$class;$/;"	v
@@ -870,7 +892,10 @@ cmdret	Rip/cdripper.class.php	/^    private $cmdret=0;$/;"	v
 cmds	Shell/cli.class.php	/^        $cmds=$this->menucmds;$/;"	v
 cmux	DVB/livetv.php	/^            $cmux=$recording->getCurrentMux();$/;"	v
 cmux	DVB/livetvts.php	/^            $cmux=$recording->getCurrentMux();$/;"	v
-cn	AWS/ec2.class.php	/^            $cn=count($arr);$/;"	v
+cn	AWS/ec2-create-instance.class.php	/^                            $cn=count($this->hostnames);$/;"	v
+cn	AWS/ec2-create-instance.class.php	/^                        $cn=count($this->hostnames);$/;"	v
+cn	AWS/ec2-create-instance.class.php	/^                $cn=1;$/;"	v
+cn	AWS/ec2-create-instance.class.php	/^                $cn=count($this->settings["Hostnames"]);$/;"	v
 cn	DB/data.class.php	/^            $cn=$this->mx->numRows();$/;"	v
 cn	DB/simple-mysql.class.php	/^            $cn=mysql_num_rows($this->rs);$/;"	v
 cn	DVB/dvblistings.functions.php	/^            $cn=count($ctmp);$/;"	v
@@ -1048,7 +1073,7 @@ continue	DVB/rprog.class.php	/^                $continue=true;$/;"	v
 continue	DVB/rprog.class.php	/^        $continue=false;$/;"	v
 continue	DVB/tsprocessor.class.php	/^                                $continue=false;$/;"	v
 continue	DVB/tsprocessor.class.php	/^                                $continue=true;$/;"	v
-copyKeys	AWS/ec2.class.php	/^    private function copyKeys($keys,$arr) \/*{{{*\/$/;"	f
+copyKeys	AWS/ec2.class.php	/^    protected function copyKeys($keys,$arr) \/*{{{*\/$/;"	f
 copyarray	DVB/recording.class.php	/^        $this->copyarray=array($/;"	v
 copyarray	DVB/recording.class.php	/^    private $copyarray=false;$/;"	v
 count	HTML/class.table.php	/^            $count = count( $row_array );$/;"	v
@@ -1059,10 +1084,16 @@ counter	DVB/dvbctrl.class.php	/^                $counter=0;$/;"	v
 counter	DVB/dvbctrl.class.php	/^            $counter=0;$/;"	v
 createCutPoints	DVB/rfile.class.php	/^    private function createCutPoints($ismpg=false)\/*{{{*\/$/;"	f
 createEUID	DVB/epgdb.class.php	/^    public function createEUID($netid,$tid,$servid,$eventid)$/;"	f
+createTags	AWS/ec2-tags.class.php	/^    public function createTags($resourceid,$tags)$/;"	f
+credentials	AWS/aws-example.php	/^$credentials="$home\/.aws.conf.php";$/;"	v
 crfn	Rip/audiobookripper.class.php	/^    private $crfn=""; \/\/ current rip filename$/;"	v
 crtrack	Rip/audiobookripper.class.php	/^    private $crtrack=0; \/\/ current rip track$/;"	v
+csets	AWS/ec2.class.php	/^        $this->csets=array($/;"	v
+csets	AWS/ec2.class.php	/^        $this->csets=array();$/;"	v
+csets	AWS/ec2.class.php	/^    protected $csets;$/;"	v
 csql	DVB/program.class.php	/^            $csql=" and channel in (" . $this->arr["channel"] . ",$p1)";$/;"	v
 csql	DVB/program.class.php	/^            $csql=" and channel=" . $this->arr["channel"];$/;"	v
+ct	AWS/ec2-tags.class.php	/^    public function ct($resourceid,$tags)$/;"	f
 ctmp	DVB/dvblistings.functions.php	/^        $ctmp=explode("|",$cast);$/;"	v
 curchans	DVB/livetv.php	/^    $curchans=array();$/;"	v
 curchans	DVB/livetvts.php	/^    $curchans=array();$/;"	v
@@ -1110,7 +1141,7 @@ d	file.php	/^        $d=directoryRead($dir);$/;"	v
 d	tools.class.php	/^            $d=$this->directoryRead($dir);$/;"	v
 d	tools.class.php	/^            $d=dir($dir);$/;"	v
 d	tools.class.php	/^            $d=dir($directory);$/;"	v
-da	AWS/ec2.class.php	/^    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)\/*{{{*\/$/;"	f
+da	AWS/ec2-images.class.php	/^    public function da($executableby=false,$imageid=false,$owner=false,$filter=false)$/;"	f
 da	HTML/form.class.php	/^    var $da;$/;"	v
 da	HTML/input_field.class.php	/^ var $da; \/\/ array to hold the details$/;"	v
 dark	Shell/cli.class.php	/^                    $dark=true;$/;"	v
@@ -1119,6 +1150,11 @@ dark	Shell/cli.class.php	/^                $dark=true;$/;"	v
 dark	cli.php	/^                $dark=true;$/;"	v
 dark	cli.php	/^            $dark=false;$/;"	v
 dark	cli.php	/^            $dark=true;$/;"	v
+data	AWS/ec2-create-instance.class.php	/^            $this->data=array();$/;"	v
+data	AWS/ec2-images.class.php	/^            $this->data=array();$/;"	v
+data	AWS/ec2-instances.class.php	/^            $this->data=array();$/;"	v
+data	AWS/ec2-tags.class.php	/^                    $this->data=array("tags"=>$this->flattenSet($this->rawdata["tagSet"]["item"],"key","value"));$/;"	v
+data	AWS/ec2.class.php	/^    protected $data;$/;"	v
 data	DVB/dvbctrl.class.php	/^    private $data=array();$/;"	v
 data	DVB/dvblistings.functions.php	/^                            $data=$tarr["outside"];$/;"	v
 data	DVB/dvblistings.functions.php	/^        $data="";$/;"	v
@@ -1181,7 +1217,10 @@ debugstr	DVB/program.class.php	/^                $debugstr="Adding";$/;"	v
 debugtoconsole	LOG/logging.class.php	/^        $this->debugtoconsole=$debugtoconsole;$/;"	v
 debugtoconsole	LOG/logging.class.php	/^    private $debugtoconsole=false;$/;"	v
 debugtoconsole	LOG/website_logging.class.php	/^    private $debugtoconsole=false;$/;"	v
-decodeRawInstances	AWS/ec2.class.php	/^    private function decodeRawInstances() \/*{{{*\/$/;"	f
+decodeNewRawInstances	AWS/ec2-create-instance.class.php	/^    private function decodeNewRawInstances() \/*{{{*\/$/;"	f
+decodeRawAMIs	AWS/ec2-images.class.php	/^    private function decodeRawAMIs()\/*{{{*\/$/;"	f
+decodeRawData	AWS/ec2-create-instance.class.php	/^    private function decodeRawData()\/*{{{*\/$/;"	f
+decodeRawInstances	AWS/ec2-instances.class.php	/^    private function decodeRawInstances() \/*{{{*\/$/;"	f
 defa	Shell/stringtools.class.php	/^            $defa=array();$/;"	v
 defa	Shell/stringtools.class.php	/^        $defa=false;$/;"	v
 defa	string.php	/^        $defa=array();$/;"	v
@@ -1224,8 +1263,9 @@ delimstart	DVB/dvblistings.functions.php	/^        $delimstart="<programme";$/;"
 demuxFiles	DVB/projectx.class.php	/^    public function demuxFiles($background=false)$/;"	f
 demuxSubtitles	DVB/projectx.class.php	/^    public function demuxSubtitles($spid="")$/;"	f
 demuxVA	DVB/tsprocessor.class.php	/^    private function demuxVA()$/;"	f
-describeAMIs	AWS/ec2.class.php	/^    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)\/*{{{*\/$/;"	f
-describeInstances	AWS/ec2.class.php	/^    public function describeInstances() \/*{{{*\/$/;"	f
+describeAMIs	AWS/ec2-images.class.php	/^    public function describeAMIs($executableby=false,$imageid=false,$owner=false,$filter=false)$/;"	f
+describeInstances	AWS/ec2-instances.class.php	/^    public function describeInstances($instanceid=false,$filter=false)$/;"	f
+describeTags	AWS/ec2-tags.class.php	/^    public function describeTags($filter)$/;"	f
 description	DVB/tsprocessor.class.php	/^                            $description=stripslashes($this->progrec->getData("description"));$/;"	v
 df	DVB/livetv.php	/^    $df=disk_free_space($config["thebin"]); \/\/ this is in bytes$/;"	v
 df	DVB/livetvts.php	/^    $df=disk_free_space($config["thebin"]); \/\/ this is in bytes$/;"	v
@@ -1236,7 +1276,7 @@ dfm	tools.class.php	/^            $dfm=exec($cmd);$/;"	v
 dfn	DVB/rfile.class.php	/^        $dfn=dirname($fn);$/;"	v
 dfp	LOG/website_logging.class.php	/^                $this->dfp=fopen($this->debugfile,"a");$/;"	v
 dfp	LOG/website_logging.class.php	/^    private $dfp;$/;"	v
-di	AWS/ec2.class.php	/^    public function di()\/*{{{*\/ \/*{{{*\/$/;"	f
+di	AWS/ec2-instances.class.php	/^    public function di()$/;"	f
 did	DVB/tsfile.class.php	/^            $did=$this->data_id?" id:" . $this->data_id . ":":"";$/;"	v
 diff	DVB/program.class.php	/^                        $diff=true;$/;"	v
 diff	DVB/program.class.php	/^                $diff=false;$/;"	v
@@ -1271,7 +1311,7 @@ diskstartat	Rip/audiobookripper.class.php	/^        $this->diskstartat=$diskstar
 diskstartat	Rip/audiobookripper.class.php	/^    private $diskstartat=1;$/;"	v
 dlen	Shell/cli.class.php	/^                $dlen=strlen($sarr["display"]);$/;"	v
 doChannelUpdate	DVB/dvblistings.functions.php	/^function doChannelUpdate($log)$/;"	f
-doCurl	AWS/ec2.class.php	/^    private function doCurl() \/*{{{*\/$/;"	f
+doCurl	AWS/ec2.class.php	/^    protected function doCurl() \/*{{{*\/$/;"	f
 doDumpXML	DVB/dvblistings.functions.php	/^function doDumpXML($log)$/;"	f
 doEdit	DVB/tsprocessor.class.php	/^    public function doEdit()$/;"	f
 doFileOperations	DVB/rfile.class.php	/^    public function doFileOperations($edit=false)\/*{{{*\/$/;"	f
@@ -1288,6 +1328,7 @@ dread	file.php	/^function dread($dir)\/*{{{*\/$/;"	f
 dread	tools.class.php	/^    public function dread($dir)\/*{{{*\/$/;"	f
 dstarted	DVB/livetv.php	/^        $dstarted=true;$/;"	v
 dstarted	DVB/livetv.php	/^    $dstarted=false;$/;"	v
+dt	AWS/ec2-tags.class.php	/^    public function dt($filter)$/;"	f
 dt	DVB/livetv.php	/^                $dt=$dtt["data"][0];$/;"	v
 dt	DVB/livetv.php	/^                $dt=$op[0];$/;"	v
 dt	DVB/rfile.class.php	/^            $dt=date("d\/m\/y H:i:s");$/;"	v
@@ -1521,8 +1562,9 @@ finishFile	DVB/recordedfile.class.php	/^    public function finishFile()$/;"	f
 finishat	Rip/audiobookripper.class.php	/^        $this->finishat=$finishat;$/;"	v
 finishat	Rip/audiobookripper.class.php	/^    private $finishat=0;$/;"	v
 firstScFile	DVB/rprog.class.php	/^    public function firstScFile()$/;"	f
-flattenInstance	AWS/ec2.class.php	/^    private function flattenInstance($iarr) \/*{{{*\/$/;"	f
-flattenSet	AWS/ec2.class.php	/^    private function flattenSet($arr,$namekey,$datakey) \/*{{{*\/$/;"	f
+flattenData	AWS/ec2.class.php	/^    protected function flattenData($iarr,$datatype)\/*{{{*\/$/;"	f
+flattenInstance	AWS/ec2.class.php	/^    protected function flattenInstance($iarr) \/*{{{*\/$/;"	f
+flattenSet	AWS/ec2.class.php	/^    protected function flattenSet($arr,$namekey,$datakey) \/*{{{*\/$/;"	f
 fm	Shell/filetools.class.php	/^            $fm=strtotime($dfm);$/;"	v
 fm	Shell/filetools.class.php	/^        $fm=false;$/;"	v
 fm	file.php	/^        $fm=strtotime($dfm);$/;"	v
@@ -1747,6 +1789,7 @@ getQueryLog	DB/mysql.class.php	/^    public function getQueryLog()$/;"	f
 getRadio	DVB/adapterdb.class.php	/^    private function getRadio()$/;"	f
 getRadioServices	DVB/adapterdb.class.php	/^    public function getRadioServices()$/;"	f
 getRawData	AWS/ec2.class.php	/^    public function getRawData() \/*{{{*\/$/;"	f
+getRawXML	AWS/ec2.class.php	/^    public function getRawXML()\/*{{{*\/$/;"	f
 getReadableTime	DB/mysql.class.php	/^	public function getReadableTime($time) {$/;"	f
 getRecord	DB/mysql.class.php	/^ function getRecord($table,$chkfield,$id=0,$format=MYSQL_BOTH)$/;"	f
 getRegion	AWS/ec2.class.php	/^    public function getRegion() \/*{{{*\/$/;"	f
@@ -1805,7 +1848,7 @@ gs	HTML/class.table.php	/^    	$gs="";$/;"	v
 gstr	AWS/ec2.class.php	/^                $this->gstr=$tmp;$/;"	v
 gstr	AWS/ec2.class.php	/^        $this->gstr="";$/;"	v
 gstr	AWS/ec2.class.php	/^        $this->gstr=str_replace("%7E","~",$this->gstr);$/;"	v
-gstr	AWS/ec2.class.php	/^    private $gstr;$/;"	v
+gstr	AWS/ec2.class.php	/^    protected $gstr;$/;"	v
 halfhour	DVB/dvblistings.functions.php	/^        $halfhour=60*30;$/;"	v
 hasErrors	Shell/background.class.php	/^    public function hasErrors()$/;"	f
 hasOutput	Shell/background.class.php	/^    public function hasOutput()$/;"	f
@@ -1825,6 +1868,7 @@ hmsToSec	base.class.php	/^    public function hmsToSec($hms) \/\/ {{{$/;"	f
 hmsToSec	video.php	/^function hmsToSec($hms) \/\/ {{{$/;"	f
 hn	DVB/config.php	/^$hn=gethostname();$/;"	v
 hnid	DVB/epgdb.class.php	/^        $hnid=dechex($netid);$/;"	v
+home	AWS/aws-example.php	/^$home=getenv("HOME");$/;"	v
 home	DVB/dvbstreamer.class.php	/^                $this->home=$home;$/;"	v
 home	DVB/dvbstreamer.class.php	/^            $this->home=$home;$/;"	v
 home	DVB/dvbstreamer.class.php	/^    private $home="";$/;"	v
@@ -1832,6 +1876,8 @@ homedir	DVB/livetv.php	/^$homedir=$uarr["dir"];$/;"	v
 homedir	DVB/livetvts.php	/^$homedir=$uarr["dir"];$/;"	v
 host	DVB/dvbctrl.class.php	/^                $host=DVBHOST;$/;"	v
 host	DVB/dvbstreamer.class.php	/^    private $host="kaleb";$/;"	v
+hostnames	AWS/ec2-create-instance.class.php	/^            $this->hostnames=$this->settings["Hostnames"];$/;"	v
+hostnames	AWS/ec2-create-instance.class.php	/^    private $hostnames;$/;"	v
 hotkey	Shell/cli.class.php	/^                            $hotkey=$tmp;$/;"	v
 hotkey	Shell/cli.class.php	/^                        $hotkey=$tmp;$/;"	v
 hotkey	Shell/cli.class.php	/^            $hotkey=false;$/;"	v
@@ -1859,6 +1905,9 @@ ident	DVB/dvbctrl.class.php	/^        $ident="DVBStreamer\/";$/;"	v
 identTsFile	DVB/rfile.class.php	/^    private function identTsFile()\/*{{{*\/$/;"	f
 ii	base.class.php	/^                $ii=intval($tarr[1]);$/;"	v
 ii	video.php	/^        $ii=intval($tarr[1]);$/;"	v
+iids	AWS/ec2-create-instance.class.php	/^                $iids=array();$/;"	v
+imageid	AWS/ec2-create-instance.class.php	/^    private $imageid;$/;"	v
+images	AWS/aws-example.php	/^$images=new EC2Images(false,$accesskey,$secret,$region);$/;"	v
 includes	php.php	/^    $includes=array("include_once(\\"","require_once(\\"","include(\\"","require(\\"");$/;"	v
 info	DVB/dvbctrl.class.php	/^                $info=array();$/;"	v
 info	DVB/dvblistings.functions.php	/^                $info=$dvb->serviceInfo($chan);$/;"	v
@@ -1873,7 +1922,7 @@ inia	string.php	/^        $inia=array();$/;"	v
 inia	tools.class.php	/^            $inia=array();$/;"	v
 init	Rip/audiobookripper.class.php	/^    private function init()$/;"	f
 init	Rip/cdripper.class.php	/^    private function init()$/;"	f
-initParams	AWS/ec2.class.php	/^    private function initParams() \/*{{{*\/$/;"	f
+initParams	AWS/ec2.class.php	/^    protected function initParams($action=false) \/*{{{*\/$/;"	f
 input	Shell/cli.class.php	/^        $input=strtolower($this->cliInput($prompt));$/;"	v
 input	cli.php	/^    $input=strtolower(cliInput($prompt));$/;"	v
 inputCell	HTML/form.class.php	/^		$this->inputCell=array("class"=>"formleft");$/;"	v
@@ -1885,8 +1934,7 @@ insertSpaceBeforeWord	string.php	/^function insertSpaceBeforeWord($word="",$str=
 insertSpaceBeforeWord	tools.class.php	/^    function insertSpaceBeforeWord($word="",$str="")$/;"	f
 inserted	DVB/dvblistings.functions.php	/^                            $inserted=$discarded=$splitprogs=0;$/;"	v
 inserted	DVB/dvblistings.functions.php	/^    $inserted=$discarded=$splitprogs=0;$/;"	v
-instances	AWS/ec2.class.php	/^            $this->instances=array();$/;"	v
-instances	AWS/ec2.class.php	/^    private $instances;$/;"	v
+instances	AWS/aws-example.php	/^$instances=new EC2Instances(false,$accesskey,$secret,$region);$/;"	v
 ip	HTML/form.class.php	/^			$ip=new InputField($type,$name,$value,$ext,"",$right_align);$/;"	v
 ip	HTML/form.class.php	/^		$ip=new InputField();$/;"	v
 isClean	DB/data.class.php	/^    function isClean()$/;"	f
@@ -1970,6 +2018,7 @@ keep	Media/duplicatemedia.class.php	/^                    $keep=1;$/;"	v
 keep	Media/duplicatemedia.class.php	/^                    $keep=intval($keep);$/;"	v
 key	DVB/dvbctrl.class.php	/^                $key="<Primary>";$/;"	v
 key	DVB/dvbctrl.class.php	/^                $key="dvb$filternumber";$/;"	v
+keyname	AWS/ec2-create-instance.class.php	/^    private $keyname;$/;"	v
 keys	DB/mysql.class.php	/^					$keys=$ky;$/;"	v
 keys	DB/mysql.class.php	/^		$keys="";$/;"	v
 keys	Unix/passwd.class.php	/^        $keys=array("uname","passwd","uid","gid","fname","home","shell");$/;"	v
@@ -2262,8 +2311,8 @@ mx	Media/mediawalker.class.php	/^    private $mx;$/;"	v
 mypid	DVB/livetv.php	/^$mypid=posix_getpid();$/;"	v
 mypid	DVB/livetvts.php	/^$mypid=posix_getpid();$/;"	v
 nPadStr	DB/data.class.php	/^    function nPadStr($string,$length=2)$/;"	f
-name	AWS/ec2.class.php	/^                    $name="Filter" . ". " . $iter . ".";$/;"	v
 name	AWS/ec2.class.php	/^                    $name=$key . "." . $iter;$/;"	v
+name	AWS/ec2.class.php	/^                    $name=$request . "." . $iter . ".";$/;"	v
 name	AWS/ec2.class.php	/^                $name=$key . "." . $iter;$/;"	v
 name	DVB/dvblistings.functions.php	/^                        $name=trim($ctmp[$x]);$/;"	v
 name	DVB/dvblistings.functions.php	/^                        $name=trim($tmp[1]);$/;"	v
@@ -2440,7 +2489,9 @@ numtracks	Rip/cdripper.class.php	/^    private $numtracks=0;$/;"	v
 numtracks	Rip/lame.class.php	/^            $this->numtracks=$numtracks;$/;"	v
 numtracks	Rip/lame.class.php	/^        $numtracks=intval($numtracks);$/;"	v
 numtracks	Rip/lame.class.php	/^    private $numtracks=0;$/;"	v
+oarr	AWS/ec2.class.php	/^            $oarr=array();$/;"	v
 oarr	AWS/ec2.class.php	/^        $oarr=array();$/;"	v
+oarr	AWS/ec2.class.php	/^        $oarr=false;$/;"	v
 oarr	HTML/option_field.class.php	/^	var $oarr;$/;"	v
 oarr	HTML/select_field.class.php	/^		$this->oarr=array();$/;"	v
 oarr	HTML/select_field.class.php	/^	var $oarr;$/;"	v
@@ -2631,7 +2682,7 @@ pages	DB/data.class.php	/^    var $pages;$/;"	v
 pages	HTML/class.table.php	/^		$pages=intval($t_rows\/$p_rows);$/;"	v
 pages	HTML/class.table.php	/^    	$pages=intval($tr \/ $pr);$/;"	v
 params	AWS/ec2.class.php	/^        $this->params=array($/;"	v
-params	AWS/ec2.class.php	/^    private $params;$/;"	v
+params	AWS/ec2.class.php	/^    protected $params;$/;"	v
 parr	DVB/dvblistings.functions.php	/^                $parr=false;$/;"	v
 parr	DVB/dvblistings.functions.php	/^            $parr=false;$/;"	v
 parr	DVB/dvblistings.functions.php	/^        $parr=array();$/;"	v
@@ -2822,7 +2873,7 @@ px	DVB/tsfile.class.php	/^                    $px=new Projectx($this->log,$this-
 q	DB/mysql.class.php	/^        $q=array("sql"=>$sql,'time' => ($this->getTime() - $start)*1000);$/;"	v
 qarr	DB/data.class.php	/^        $qarr=$this->mx->getQueryLog();$/;"	v
 qstr	AWS/ec2.class.php	/^        $this->qstr="GET\\nec2." . $this->region . ".amazonaws.com\\n\/\\n" . $this->gstr;$/;"	v
-qstr	AWS/ec2.class.php	/^    private $qstr;$/;"	v
+qstr	AWS/ec2.class.php	/^    protected $qstr;$/;"	v
 qt	DB/mysql.class.php	/^					$qt=$this->query($sql);$/;"	v
 qt	DB/mysql.class.php	/^				$qt=$this->query($sql);$/;"	v
 qtype	DB/data.class.php	/^            $qtype=$this->mx->query("show columns from " . $this->table);$/;"	v
@@ -2853,8 +2904,9 @@ radioarr	DVB/channel.class.php	/^                $radioarr=array();$/;"	v
 radioarr	DVB/channel.class.php	/^            $radioarr=$this->byMux($mux,$favs,$withencrypted,"radio");$/;"	v
 rarr	DVB/actor.class.php	/^            $rarr=array();$/;"	v
 rarr	DVB/actor.class.php	/^        $rarr=false;$/;"	v
-rawdata	AWS/ec2.class.php	/^        $this->rawdata=$this->doCurl();$/;"	v
-rawdata	AWS/ec2.class.php	/^    private $rawdata;$/;"	v
+rawdata	AWS/ec2-create-instance.class.php	/^                $this->rawdata=unserialize(file_get_contents("dump.psa"));$/;"	v
+rawdata	AWS/ec2.class.php	/^    protected $rawdata;$/;"	v
+rawxml	AWS/ec2.class.php	/^    protected $rawxml;$/;"	v
 rc	DVB/livetv.php	/^        $rc=5*60;$/;"	v
 rc	DVB/livetv.php	/^        $rc=checkFileSizes();$/;"	v
 rc	DVB/livetv.php	/^    $rc=$twentyfourhours;$/;"	v
@@ -2900,8 +2952,9 @@ recordThisProgram	DVB/program.class.php	/^    public function recordThisProgram(
 recordings	DVB/livetv.php	/^$recordings=array();$/;"	v
 recordings	DVB/livetvts.php	/^        $recordings=array();$/;"	v
 recordings	DVB/livetvts.php	/^$recordings=array();$/;"	v
+region	AWS/TEMPLATE_.aws.conf.php	/^$region="eu-west-1";$/;"	v
 region	AWS/ec2.class.php	/^            $this->region=$region;$/;"	v
-region	AWS/ec2.class.php	/^    private $region;$/;"	v
+region	AWS/ec2.class.php	/^    protected $region;$/;"	v
 rem	DVB/dvblistings.functions.php	/^            $rem=$len%$halfhour;$/;"	v
 rem	base.class.php	/^        $rem=$rem%60;$/;"	v
 rem	base.class.php	/^        $rem=$sec%3600;$/;"	v
@@ -2931,9 +2984,11 @@ reply	DVB/dvbctrl.class.php	/^                $reply=$this->rcvData();$/;"	v
 reply	DVB/dvbctrl.class.php	/^            $reply=$this->rcvData();$/;"	v
 req	DVB/dvbctrl.class.php	/^            $req="setmrl";$/;"	v
 req	DVB/dvbctrl.class.php	/^            $req="setsfmrl";$/;"	v
+reqkey	AWS/ec2.class.php	/^        $reqkey=$istagging?"Key":"Name";$/;"	v
+request	AWS/ec2.class.php	/^        $request=$istagging?"Tag":"Filter";$/;"	v
 request	DVB/dvbctrl.class.php	/^    public function request($cmd="",$argarr="",$auth=true)\/*{{{*\/$/;"	f
 request	DVB/dvbstreamer.class.php	/^    public function request($req="")$/;"	f
-res	AWS/ec2.class.php	/^        $res=curl_exec($ch);$/;"	v
+requiredsettings	AWS/ec2-create-instance.class.php	/^        $this->requiredsettings=array("ImageId","KeyName","InstanceType","Hostnames");$/;"	v
 res	DVB/adapterdb.class.php	/^            $res=$this->db->query("select id,name from Services where type=0 and ca=0");$/;"	v
 res	DVB/adapterdb.class.php	/^            $res=$this->db->query("select id,name from Services where type=1 and ca=0");$/;"	v
 res	DVB/adapterdb.class.php	/^            $res=$this->db->query("select id,name from Services");$/;"	v
@@ -2953,8 +3008,22 @@ res	DVB/tvddb.class.php	/^                $res=null;$/;"	v
 resetffprobe	Media/ffprobe.class.php	/^    private function resetffprobe()\/*{{{*\/$/;"	f
 restarttime	DVB/livetv.php	/^        $restarttime=date("H:i",$snow);$/;"	v
 restarttime	DVB/livetvts.php	/^        $restarttime=date("H:i",$snow);$/;"	v
-ret	AWS/ec2.class.php	/^            $ret=$this->instances;$/;"	v
-ret	AWS/ec2.class.php	/^            $ret=true;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^                        $ret=$this->data;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^                    $ret=$this->data;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^                $ret=false;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^            $ret=true;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^        $ret=false;$/;"	v
+ret	AWS/ec2-create-instance.class.php	/^        $ret=true;$/;"	v
+ret	AWS/ec2-images.class.php	/^                $ret=$this->data;$/;"	v
+ret	AWS/ec2-images.class.php	/^                $ret=true;$/;"	v
+ret	AWS/ec2-images.class.php	/^        $ret=false;$/;"	v
+ret	AWS/ec2-instances.class.php	/^                $ret=$this->data;$/;"	v
+ret	AWS/ec2-instances.class.php	/^            $ret=true;$/;"	v
+ret	AWS/ec2-instances.class.php	/^        $ret=false;$/;"	v
+ret	AWS/ec2-tags.class.php	/^                            $ret=true;$/;"	v
+ret	AWS/ec2-tags.class.php	/^                    $ret=$this->data;$/;"	v
+ret	AWS/ec2-tags.class.php	/^        $ret=false;$/;"	v
+ret	AWS/ec2.class.php	/^            $ret=$tinst;$/;"	v
 ret	AWS/ec2.class.php	/^        $ret=false;$/;"	v
 ret	DB/data.class.php	/^                $ret=true;$/;"	v
 ret	DB/data.class.php	/^            $ret=$this->data_id;$/;"	v
@@ -3188,6 +3257,7 @@ run	Shell/background.class.php	/^    public function run($sleep=0,$pidfile="")$/
 runCmd	Shell/extern.class.php	/^    private function runCmd($background=false)$/;"	f
 runCommandInTerminal	DVB/rfile.class.php	/^    private function runCommandInTerminal($cmd)\/*{{{*\/$/;"	f
 runCommandInTerminal	DVB/rprog.class.php	/^    private function runCommandInTerminal($cmd)$/;"	f
+runInstance	AWS/ec2-create-instance.class.php	/^    public function runInstance()\/*{{{*\/$/;"	f
 s	DVB/livetv.php	/^            $s=new Series($series["id"],$log);$/;"	v
 s	DVB/livetv.php	/^        $s=null;$/;"	v
 s	DVB/rprog.class.php	/^                    $s=cliInput("A\/d ");$/;"	v
@@ -3213,8 +3283,10 @@ sec	base.class.php	/^            $sec=$sec%86400;$/;"	v
 sec	video.php	/^        $sec=$sec%86400;$/;"	v
 secToHMS	base.class.php	/^    public function secToHMS($sec,$showdays=false) \/\/ {{{$/;"	f
 secToHMS	video.php	/^function secToHMS($sec,$showdays=false) \/\/ {{{$/;"	f
+secgrps	AWS/ec2-create-instance.class.php	/^    private $secgrps;$/;"	v
+secret	AWS/TEMPLATE_.aws.conf.php	/^$secret="<SECRET KEY>";$/;"	v
 secretkey	AWS/ec2.class.php	/^            $this->secretkey=$secretKey;$/;"	v
-secretkey	AWS/ec2.class.php	/^    private $secretkey;$/;"	v
+secretkey	AWS/ec2.class.php	/^    protected $secretkey;$/;"	v
 secs	Media/ffprobe.class.php	/^                        $secs=substr($stmp[3],0,2);$/;"	v
 select	DVB/dvbctrl.class.php	/^    public function select($service,$filternumber=0,$nowait=false)\/*{{{*\/$/;"	f
 select	DVB/program.class.php	/^        $select="id,mux,title,start,stop,(stop-start) as length,channel,description,programid,seriesid,record";$/;"	v
@@ -3231,6 +3303,7 @@ serviceForFile	DVB/dvbctrl.class.php	/^    public function serviceForFile($file=
 serviceInfo	DVB/dvbctrl.class.php	/^    public function serviceInfo($service)\/*{{{*\/$/;"	f
 setAData	DB/data.class.php	/^    function setAData($arr_in)$/;"	f
 setAPart	DB/data.class.php	/^    function setAPart($arr_in)$/;"	f
+setAZ	AWS/ec2-create-instance.class.php	/^    public function setAZ($az=false)\/*{{{*\/$/;"	f
 setAccessKey	AWS/ec2.class.php	/^    public function setAccessKey($accessKey="") \/*{{{*\/$/;"	f
 setAction	HTML/form.class.php	/^    function setAction($action)$/;"	f
 setAlbum	DVB/lame.class.php	/^    public function setAlbum($album="")$/;"	f
@@ -3281,6 +3354,9 @@ setFilename	DVB/rfile.class.php	/^    public function setFilename($filename="")\
 setFiles	DVB/projectx.class.php	/^    public function setFiles($files="")$/;"	f
 setGenre	DVB/lame.class.php	/^    public function setGenre($genre="")$/;"	f
 setGet	HTML/link.class.php	/^	function setGet($get)$/;"	f
+setGroups	AWS/ec2-create-instance.class.php	/^    public function setGroups($groups=false)\/*{{{*\/$/;"	f
+setImageid	AWS/ec2-create-instance.class.php	/^    public function setImageid($imageid=false)\/*{{{*\/$/;"	f
+setKeyname	AWS/ec2-create-instance.class.php	/^    public function setKeyname($keyname=false)\/*{{{*\/$/;"	f
 setLabel	HTML/input_field.class.php	/^ function setLabel($label)$/;"	f
 setLabelPos	HTML/input_field.class.php	/^ function setLabelPos($pos=true)$/;"	f
 setLetter	DB/data.class.php	/^    function setLetter($letter)$/;"	f
@@ -3318,8 +3394,10 @@ setRows	HTML/input_field.class.php	/^	function setRows($rows)$/;"	f
 setSecretKey	AWS/ec2.class.php	/^    public function setSecretKey($secretKey="") \/*{{{*\/$/;"	f
 setSelected	HTML/option_field.class.php	/^	function setSelected($s)$/;"	f
 setSeriesRecordings	DVB/livetv.php	/^function setSeriesRecordings()\/*{{{*\/$/;"	f
+setSettings	AWS/ec2-create-instance.class.php	/^    public function setSettings($settings)\/*{{{*\/$/;"	f
 setSize	HTML/input_field.class.php	/^ function setSize($size)$/;"	f
 setStartPoint	DB/data.class.php	/^    function setStartPoint($sp=0)$/;"	f
+setSubnet	AWS/ec2-create-instance.class.php	/^    public function setSubnet($subnet=false)\/*{{{*\/$/;"	f
 setTarget	HTML/link.class.php	/^	function setTarget($target)$/;"	f
 setText	HTML/link.class.php	/^	function setText($text)$/;"	f
 setText	HTML/option_field.class.php	/^	function setText($t)$/;"	f
@@ -3330,9 +3408,11 @@ setToConsole	LOG/logging.class.php	/^    public function setToConsole($toConsole
 setToConsole	LOG/website_logging.class.php	/^    public function setToConsole($toConsole=true) \/\/ {{{$/;"	f
 setTrackNumber	DVB/lame.class.php	/^    public function setTrackNumber($trackNumber="")$/;"	f
 setTrackNumber	Rip/lame.class.php	/^    public function setTrackNumber($trackNumber)$/;"	f
+setType	AWS/ec2-create-instance.class.php	/^    public function setType($type=false)\/*{{{*\/$/;"	f
 setType	DVB/rfile.class.php	/^    public function setType($type="tv")\/*{{{*\/$/;"	f
 setType	HTML/input_field.class.php	/^ function setType($type)$/;"	f
 setUdpMrl	DVB/dvbctrl.class.php	/^    public function setUdpMrl($port,$filternumber=0)\/*{{{*\/$/;"	f
+setUserdata	AWS/ec2-create-instance.class.php	/^    public function setUserdata($userdata=false)\/*{{{*\/$/;"	f
 setValue	HTML/input_field.class.php	/^ function setValue($value)$/;"	f
 setValue	HTML/option_field.class.php	/^	function setValue($v)$/;"	f
 setVideofile	DVB/mplex.class.php	/^    public function setVideofile($videofile="")$/;"	f
@@ -3343,19 +3423,24 @@ setYear	DVB/lame.class.php	/^    public function setYear($year="")$/;"	f
 setYear	Rip/lame.class.php	/^    public function setYear($year)$/;"	f
 setmrl	DVB/dvbctrl.class.php	/^    public function setmrl($file,$filternumber=0)\/*{{{*\/$/;"	f
 setpid	Unix/process.class.php	/^    public function setpid($Pid=0) \/\/ {{{$/;"	f
+settings	AWS/aws-example.php	/^$settings=array($/;"	v
+settings	AWS/ec2-create-instance.class.php	/^            $this->settings=$settings;$/;"	v
+settings	AWS/ec2-create-instance.class.php	/^    private $settings=false;$/;"	v
 sfn	DVB/stream.class.php	/^                        $sfn=makeSensibleFilename($prog["title"]);$/;"	v
 sfn	DVB/stream.class.php	/^                    $sfn=makeSensibleFilename($cname);$/;"	v
 sfn	DVB/tsfile.class.php	/^                $sfn=makeSensibleFilename($ptitle);$/;"	v
+shortcircuit	AWS/ec2-create-instance.class.php	/^        $this->shortcircuit=$shortcircuit;$/;"	v
+shortcircuit	AWS/ec2-create-instance.class.php	/^    private $shortcircuit;$/;"	v
 si	DVB/dvbstreamer.class.php	/^            $si=$this->request("serviceinfo " . $serv);$/;"	v
 sid	DVB/adapterdb.class.php	/^                    $sid=array();$/;"	v
 sid	DVB/adapterdb.class.php	/^                    $this->sid=$sid;$/;"	v
 sid	DVB/adapterdb.class.php	/^    private $sid=false;$/;"	v
 sid	DVB/dvbstreamer.class.php	/^                    $sid=$key;$/;"	v
 sig	AWS/ec2.class.php	/^        $this->sig=urlencode(base64_encode(hash_hmac("sha256",$this->qstr,$this->secretkey,true)));$/;"	v
-sig	AWS/ec2.class.php	/^    private $sig;$/;"	v
+sig	AWS/ec2.class.php	/^    protected $sig;$/;"	v
 sig_handler	DVB/livetv.php	/^function sig_handler($signo)\/*{{{*\/$/;"	f
 sig_handler	DVB/livetvts.php	/^function sig_handler($signo)\/*{{{*\/$/;"	f
-signRequest	AWS/ec2.class.php	/^    private function signRequest()\/*{{{*\/$/;"	f
+signRequest	AWS/ec2.class.php	/^    protected function signRequest()\/*{{{*\/$/;"	f
 signalled	DVB/livetv.php	/^            $signalled=0;$/;"	v
 signalled	DVB/livetv.php	/^    $signalled=$signo;$/;"	v
 signalled	DVB/livetv.php	/^$signalled=0;$/;"	v
@@ -3533,6 +3618,8 @@ stopcurrentchannel	DVB/livetvts.php	/^                $stopcurrentchannel=true;$
 stopcurrentchannel	DVB/livetvts.php	/^        $stopcurrentchannel=false;$/;"	v
 stoptime	DVB/program.class.php	/^            $stoptime=$starttime+(TABLEWIDTH*60);$/;"	v
 stoptime	DVB/program.class.php	/^        $stoptime=$starttime+(24*60*60);$/;"	v
+str	AWS/ec2-create-instance.class.php	/^                        $str=$val;$/;"	v
+str	AWS/ec2-create-instance.class.php	/^                        $str=file_get_contents($val);$/;"	v
 str	DB/data.class.php	/^        $str="Data class: table: " . $this->table . " query log:\\n";$/;"	v
 str	DB/simple-mysql.class.php	/^            $str=mysql_error($this->conn);$/;"	v
 str	DVB/dvblistings.functions.php	/^                $str=$tarr["outside"];$/;"	v
@@ -3581,6 +3668,7 @@ subitemquantity	DB/data.class.php	/^    var $subitemquantity;$/;"	v
 subl	Shell/stringtools.class.php	/^            $subl=strlen($ret["text"]);$/;"	v
 subl	string.php	/^        $subl=strlen($ret["text"]);$/;"	v
 subl	tools.class.php	/^            $subl=strlen($ret["text"]);$/;"	v
+subnet	AWS/ec2-create-instance.class.php	/^    private $subnet=false;$/;"	v
 substrtitle	DVB/dvblistings.functions.php	/^    $substrtitle=array("Cricket","This Is ","Programmes start at","Babestation","CITV","Back at","..programmes start at");$/;"	v
 success	DB/mysql.class.php	/^ function success()$/;"	f
 superCleanDB	DVB/program.class.php	/^    public function superCleanDB()$/;"	f
@@ -3601,14 +3689,18 @@ table	DB/data.class.php	/^        $this->table=$table_in;$/;"	v
 table	DB/data.class.php	/^    var $table;$/;"	v
 table	HTML/class.table.php	/^        $this->table = array();$/;"	v
 table	HTML/class.table.php	/^    var $table;$/;"	v
+tag	AWS/ec2-create-instance.class.php	/^            $tag=new EC2Tags(false,$this->xaccesskey,$this->xsecretkey,$this->xregion);$/;"	v
 tag	Rip/lame.class.php	/^                    $this->tag=$str;$/;"	v
 tag	Rip/lame.class.php	/^                    $this->tag=$switch . " '" . $str . "'";$/;"	v
 tag	Rip/lame.class.php	/^        $this->tag="";$/;"	v
 tag	Rip/lame.class.php	/^    private $tag="";$/;"	v
+tagInstance	AWS/ec2-create-instance.class.php	/^    private function tagInstance($instanceid,$hostname)\/*{{{*\/$/;"	f
+tags	AWS/aws-example.php	/^$tags=new EC2Tags(false,$accesskey,$secret,$region);$/;"	v
 taname	DVB/program.class.php	/^                    $taname=$al->makeLink();$/;"	v
 taname	DVB/program.class.php	/^                $taname="";$/;"	v
 target	HTML/link.class.php	/^		$this->target=$target;$/;"	v
 target	HTML/link.class.php	/^	var $target;$/;"	v
+tarr	AWS/ec2-create-instance.class.php	/^        $tarr=array_keys($this->rawdata);$/;"	v
 tarr	DB/data.class.php	/^                    $tarr=false;$/;"	v
 tarr	DB/data.class.php	/^                $tarr=$this->mx->searchStartsWith("*",$this->table,$this->orderby,chr($this->letter),$ex);$/;"	v
 tarr	DB/data.class.php	/^                $tarr=$this->mx->searchStartsWith("*",$this->table,$this->orderby,chr($this->letter),$ob);$/;"	v
@@ -3673,8 +3765,9 @@ timenow	DVB/livetvts.php	/^    $timenow=time();$/;"	v
 timeslotChannelPrograms	DVB/program.class.php	/^    public function timeslotChannelPrograms($starttime=0,$stoptime=0,$channelid=0)$/;"	f
 timestart	DVB/livetv.php	/^$timestart=time();$/;"	v
 timestart	DVB/livetvts.php	/^$timestart=time();$/;"	v
-tinst	AWS/ec2.class.php	/^                $tinst=$this->flattenInstance($iset["instancesSet"]["item"]);$/;"	v
-tinst	AWS/ec2.class.php	/^        $tinst=$this->copyKeys($ckeys,$iarr);$/;"	v
+tinst	AWS/ec2-create-instance.class.php	/^                    $tinst=$this->flattenInstance($iset);$/;"	v
+tinst	AWS/ec2-images.class.php	/^                    $tinst=$this->flattenData($iset,"images");$/;"	v
+tinst	AWS/ec2-instances.class.php	/^                    $tinst=$this->flattenInstance($iset["instancesSet"]["item"]);$/;"	v
 title	DVB/dvblistings.functions.php	/^    $title=$p->getData("title");$/;"	v
 title	DVB/lame.class.php	/^            $this->title=$this->sanitiseString($title);$/;"	v
 title	DVB/lame.class.php	/^    private $title="";$/;"	v
@@ -3691,6 +3784,8 @@ title	Rip/lame.class.php	/^            $this->title=trim($title);$/;"	v
 title	Rip/lame.class.php	/^    private $title="";$/;"	v
 titlePrograms	DVB/rprog.class.php	/^    public function titlePrograms($title)$/;"	f
 tlist	Media/mediawalker.class.php	/^                $tlist=implode(",",$deletearr);$/;"	v
+tmp	AWS/aws-example.php	/^    $tmp=$images->getRawData();$/;"	v
+tmp	AWS/aws-example.php	/^    $tmp=$instances->getRawXML();$/;"	v
 tmp	AWS/ec2.class.php	/^            $tmp=rawurlencode($key) . "=" . rawurlencode($val);$/;"	v
 tmp	App/debug.php	/^        $tmp=nl2br($tmp);$/;"	v
 tmp	App/debug.php	/^    $tmp=print_r($var,true);$/;"	v
@@ -3932,6 +4027,7 @@ twentyfourhours	DVB/livetv.php	/^$twentyfourhours=24*60*60;$/;"	v
 twentyfourhours	DVB/livetvts.php	/^$twentyfourhours=24*60*60;$/;"	v
 txt	DVB/livetv.php	/^                $txt="Deleted: ";$/;"	v
 txt	DVB/livetv.php	/^                $txt="Failed to delete: ";$/;"	v
+type	AWS/ec2-create-instance.class.php	/^    private $type="t1.micro";$/;"	v
 type	DB/mysql.class.php	/^        $type=$this->query($sql);$/;"	v
 type	DVB/channel.class.php	/^            $type=$this->getData("type");$/;"	v
 type	DVB/dvbctrl.class.php	/^                    $type=trim($la[1]);$/;"	v
@@ -3980,11 +4076,13 @@ updateWithRTData	DVB/program.class.php	/^    public function updateWithRTData($r
 uptime	DVB/livetv.php	/^    $uptime=secToHMS($timenow-$timestart,true);$/;"	v
 uptime	DVB/livetvts.php	/^    $uptime=secToHMS($timenow-$timestart,true);$/;"	v
 url	AWS/ec2.class.php	/^        $this->url="https:\/\/ec2." . $this->region . ".amazonaws.com\/?" . $this->gstr . "&Signature=" . $this->sig;$/;"	v
-url	AWS/ec2.class.php	/^    private $url;$/;"	v
+url	AWS/ec2.class.php	/^    protected $url;$/;"	v
 user	DVB/dvbctrl.class.php	/^                $user=DVBUSER;$/;"	v
 user	DVB/dvbstreamer.class.php	/^    private $user="tvc";$/;"	v
 user	Unix/passwd.class.php	/^                    $user=$this->assocArray($ua);$/;"	v
+userdata	AWS/ec2-create-instance.class.php	/^    private $userdata;$/;"	v
 users	Unix/passwd.class.php	/^    private $users=array();$/;"	v
+val	AWS/ec2-create-instance.class.php	/^                    $val=base64_encode($str);$/;"	v
 val	DB/mysql.class.php	/^				$val=$this->sqlFormatField($value);$/;"	v
 val	Shell/cli.class.php	/^            $val=$val+32;$/;"	v
 val	Shell/cli.class.php	/^            $val=$val-32;$/;"	v
@@ -4053,7 +4151,11 @@ workdir	DVB/projectx.class.php	/^            $this->workdir=$workdir;$/;"	v
 workdir	DVB/projectx.class.php	/^    private $workdir="";$/;"	v
 workingdir	Rip/audiobookripper.class.php	/^        $this->workingdir=unixPath($this->rootdir) . "tmp";$/;"	v
 workingdir	Rip/audiobookripper.class.php	/^    private $workingdir="";$/;"	v
+x	AWS/ec2-create-instance.class.php	/^                            $x=0;$/;"	v
+x	AWS/ec2-create-instance.class.php	/^                        $x=0;$/;"	v
 xPager	HTML/class.table.php	/^    function xPager($tr,$pr,$sr,$link,$gs_arr=0)$/;"	f
+xaccesskey	AWS/ec2-create-instance.class.php	/^        $this->xaccesskey=$accesskey;$/;"	v
+xaccesskey	AWS/ec2-create-instance.class.php	/^    private $xaccesskey;$/;"	v
 xarr	DVB/dvblistings.functions.php	/^    $xarr=null;$/;"	v
 xc	DVB/dvblistings.functions.php	/^    $xc=null;$/;"	v
 xfs	Shell/filetools.class.php	/^            $xfs=(float)$xfs\/1000;$/;"	v
@@ -4061,6 +4163,10 @@ xfs	file.php	/^        $xfs=(float)$xfs\/1000;$/;"	v
 xfs	tools.class.php	/^            $xfs=(float)$xfs\/1000;$/;"	v
 xpa	DVB/dvbstreamer.class.php	/^        $xpa=$pt->findProc("dvbstreamer -d -u tvc -p tvc");$/;"	v
 xpa	DVB/dvbstreamer.class.php	/^        $xpa=null;$/;"	v
+xregion	AWS/ec2-create-instance.class.php	/^        $this->xregion=$region;$/;"	v
+xregion	AWS/ec2-create-instance.class.php	/^    private $xregion;$/;"	v
+xsecretkey	AWS/ec2-create-instance.class.php	/^        $this->xsecretkey=$secretkey;$/;"	v
+xsecretkey	AWS/ec2-create-instance.class.php	/^    private $xsecretkey;$/;"	v
 xtest	DVB/recording.class.php	/^        $xtest=$this->checkLength($nextstreamnumber);$/;"	v
 xtnre	DVB/livetvts.php	/^                    $xtnre=$tnre+$padding;$/;"	v
 year	DVB/dvblistings.functions.php	/^        $year=trim($tmp[2]);$/;"	v

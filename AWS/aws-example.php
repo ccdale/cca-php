@@ -9,7 +9,7 @@
  * aws-example.php
  *
  * Started: Sunday 24 November 2013, 12:48:56
- * Last Modified: Sunday  8 December 2013, 13:06:19
+ * Last Modified: Monday 14 April 2014, 03:59:04
  * Revision: $Id$
  * Version: 0.00
  */
@@ -18,10 +18,11 @@ $AWSLIB=dirname(__FILE__);
 $LIB=dirname($AWSLIB);
 require_once "$LIB/base.class.php";
 require_once "$AWSLIB/ec2.class.php";
-require_once "$AWSLIB/ec2-instances.class.php";
-require_once "$AWSLIB/ec2-images.class.php";
-require_once "$AWSLIB/ec2-tags.class.php";
-require_once "$AWSLIB/ec2-create-instance.class.php";
+require_once "$AWSLIB/ec2-secgroups.class.php";
+// require_once "$AWSLIB/ec2-instances.class.php";
+// require_once "$AWSLIB/ec2-images.class.php";
+// require_once "$AWSLIB/ec2-tags.class.php";
+// require_once "$AWSLIB/ec2-create-instance.class.php";
 
 $home=getenv("HOME");
 $credentials="$home/.aws.conf.php";
@@ -68,6 +69,7 @@ if(false===($ret=$tags->ct("<INSTANCEID>",array("group"=>"search")))){
 /*
  * create instance
  */
+/*
 $settings=array(
     "SecurityGroupId"=>array(
         "sg-01e3f563"
@@ -85,10 +87,11 @@ $settings=array(
 $ci=new EC2CreateInstance(false,$accesskey,$secret,$region,$settings);
 $arr=$ci->runInstance();
 // print_r($arr);
-
+ */
 /*
  * get instances list
  */
+/*
 $instances=new EC2Instances(false,$accesskey,$secret,$region);
 if(false===($arr=$instances->di())){
     print "failed\n";
@@ -96,5 +99,15 @@ if(false===($arr=$instances->di())){
     print "$tmp\n";
 }else{
     print_r($arr);
+}
+ */
+$sg=new EC2SecGroups(false,$accesskey,$secret,$region);
+if(false===($arr=$sg->describeSecurityGroups())){
+    print "failed\n";
+    $tmp=$sg->getRawXML();
+    print "$tmp\n";
+}else{
+    print_r($arr);
+    print "\n";
 }
 ?>

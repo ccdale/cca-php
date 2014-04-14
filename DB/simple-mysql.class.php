@@ -4,7 +4,7 @@
  * vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker:
  *
  * Started: Monday 23 July 2012, 13:41:11
- * Last Modified: Friday 11 October 2013, 13:10:24
+ * Last Modified: Sunday 22 December 2013, 09:30:11
  * Version: $Id: mysql.class.php 6369 2012-07-27 08:20:55Z pfcallison $
  */
 
@@ -107,7 +107,8 @@ class MySql extends Base
             $this->debug("Query: $sql");
             $this->rs=mysql_query($sql);
             if(false===$this->rs){
-                $this->error("Query error: " . mysql_errno() . ": " . mysql_error());
+                $this->error("Query error: $sql");
+                $this->error("mysql said: " . mysql_errno() . ": " . mysql_error());
             }
         }else{
             $this->warning("mysql class not ok, or sql not a valid str");
