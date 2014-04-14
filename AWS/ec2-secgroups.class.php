@@ -9,7 +9,7 @@
  * ec2-secgroups.class.php
  *
  * Started: Monday 14 April 2014, 03:45:03
- * Last Modified: Monday 14 April 2014, 03:57:52
+ * Last Modified: Monday 14 April 2014, 04:18:20
  * Revision: $Id$
  * Version: 0.00
  */
@@ -39,7 +39,14 @@ class EC2SecGroups extends EC2
     {
         parent::__destruct();
     }/*}}}*/
-    public function describeSecurityGroups()/*{{{*/
+    /** describeSecurityGroups {{{
+     * describeSecurityGroups
+     * list some or all of your security groups
+     *
+     * see: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeSecurityGroups.html
+     * returns: array of security groups
+     */
+    public function describeSecurityGroups()
     {
         $ret=false;
         $this->initParams("DescribeSecurityGroups");
