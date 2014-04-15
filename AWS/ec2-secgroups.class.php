@@ -9,7 +9,7 @@
  * ec2-secgroups.class.php
  *
  * Started: Monday 14 April 2014, 03:45:03
- * Last Modified: Monday 14 April 2014, 04:18:20
+ * Last Modified: Tuesday 15 April 2014, 11:40:34
  * Revision: $Id$
  * Version: 0.00
  */
@@ -28,10 +28,9 @@ class EC2SecGroups extends EC2
     public function __construct($logg=false,$accesskey="",$secretkey="",$region="eu-west-1")
     {
         parent::__construct($logg,$accesskey,$secretkey,$region);
-        $this->ckeys["instances"]=array("instanceId","imageId","privateDnsName","keyName","instanceType","launchTime","kernelId","subnetId","vpcId","privateIpAddress","architecture","rootDeviceType","rootDeviceName","virtualizationType","hypervisor","ebsOptimized");
-        $this->csets["instances"]=array(
-            array("key"=>"securityGroups","xkey"=>"groupSet","namekey"=>"groupName","datakey"=>"groupId"),
-            array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
+        $this->ckeys["secgroups"]=array("ownerId","groupId","groupName","groupDescription");
+        $this->csets["secgroups"]=array(
+            // array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
         );
 
     }/*}}}*/
@@ -39,21 +38,41 @@ class EC2SecGroups extends EC2
     {
         parent::__destruct();
     }/*}}}*/
+    /** dsg {{{
+     * shorthand for describeSecurityGroups
+     */
+    public function dsg()
+    {
+        return $this->describeSecurityGroups();
+    }/*}}}*/
     /** describeSecurityGroups {{{
      * describeSecurityGroups
      * list some or all of your security groups
      *
      * see: http://docs.aws.amazon.com/AWSEC2/latest/APIReference/ApiReference-query-DescribeSecurityGroups.html
      * returns: array of security groups
+     * $namearr: string or array of strings corresponding to a list of security group names
+     * $idarr: string or array of strings corresponding to a list of security group ids
+     * $filter: array of key=>val pairs
      */
-    public function describeSecurityGroups()
+    public function describeSecurityGroups($namearr=false,$idarr=false,$filter=false)
     {
         $ret=false;
         $this->initParams("DescribeSecurityGroups");
+        if(false!==$namearr){
+            $this->addNParam("GroupName",$namearr);
+        }
+        if(false!=$idarr){
+            $this->addNParam("GroupId",$idarr);
+        }
+        $this->addFilterParam($filter);
         if(false!==($this->rawdata=$this->doCurl())){
             $ret=$this->rawdata;
         }
         return $ret;
+    }/*}}}*/
+    private function decodeRawGroups()/*{{{*/
+    {
     }/*}}}*/
 }
 

@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Sunday  8 December 2013, 09:20:44
+ * Last Modified: Tuesday 15 April 2014, 11:04:39
  * Version: $Id$
  */
 
@@ -229,22 +229,6 @@ class EC2 extends Base
             // print "curl returned false\n";
         }
         return false;
-    } /*}}}*/
-    protected function flattenInstance($iarr) /*{{{*/
-    {
-        $ret=false;
-        if(false!==($tinst=$this->flattenData($iarr,"instances"))){
-            $tinst["state"]=$iarr["instanceState"]["name"];
-            $tinst["statecode"]=$iarr["instanceState"]["code"];
-            $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
-            if(isset($tinst["tags"]["Name"])){
-                $tinst["Name"]=$tinst["tags"]["Name"];
-            }else{
-                $tinst["Name"]=$tinst["instanceId"];
-            }
-            $ret=$tinst;
-        }
-        return $ret;
     } /*}}}*/
     protected function flattenData($iarr,$datatype)/*{{{*/
     {

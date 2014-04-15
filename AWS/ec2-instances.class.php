@@ -9,7 +9,7 @@
  * ec2-instances.class.php
  *
  * Started: Sunday 24 November 2013, 12:23:29
- * Last Modified: Saturday  7 December 2013, 10:29:05
+ * Last Modified: Tuesday 15 April 2014, 11:04:34
  * Revision: $Id$
  * Version: 0.00
  */
@@ -83,6 +83,22 @@ class EC2Instances extends EC2
                 }
             }
             $ret=true;
+        }
+        return $ret;
+    } /*}}}*/
+    private function flattenInstance($iarr) /*{{{*/
+    {
+        $ret=false;
+        if(false!==($tinst=$this->flattenData($iarr,"instances"))){
+            $tinst["state"]=$iarr["instanceState"]["name"];
+            $tinst["statecode"]=$iarr["instanceState"]["code"];
+            $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
+            if(isset($tinst["tags"]["Name"])){
+                $tinst["Name"]=$tinst["tags"]["Name"];
+            }else{
+                $tinst["Name"]=$tinst["instanceId"];
+            }
+            $ret=$tinst;
         }
         return $ret;
     } /*}}}*/
