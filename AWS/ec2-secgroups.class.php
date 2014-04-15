@@ -9,7 +9,7 @@
  * ec2-secgroups.class.php
  *
  * Started: Monday 14 April 2014, 03:45:03
- * Last Modified: Tuesday 15 April 2014, 11:40:34
+ * Last Modified: Tuesday 15 April 2014, 11:51:46
  * Revision: $Id$
  * Version: 0.00
  */
@@ -53,7 +53,7 @@ class EC2SecGroups extends EC2
      * returns: array of security groups
      * $namearr: string or array of strings corresponding to a list of security group names
      * $idarr: string or array of strings corresponding to a list of security group ids
-     * $filter: array of key=>val pairs
+     * $filter: array of key=>val pairs - see the amazon docs for the keys you can use
      */
     public function describeSecurityGroups($namearr=false,$idarr=false,$filter=false)
     {
