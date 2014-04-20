@@ -9,7 +9,7 @@
  * ec2-secgroups.class.php
  *
  * Started: Monday 14 April 2014, 03:45:03
- * Last Modified: Tuesday 15 April 2014, 11:51:46
+ * Last Modified: Wednesday 16 April 2014, 14:34:05
  * Revision: $Id$
  * Version: 0.00
  */
@@ -29,9 +29,13 @@ class EC2SecGroups extends EC2
     {
         parent::__construct($logg,$accesskey,$secretkey,$region);
         $this->ckeys["secgroups"]=array("ownerId","groupId","groupName","groupDescription");
-        $this->csets["secgroups"]=array(
+        // this unset is needed to ensure flatten data works correctly.
+        if(isset($this->csets)){
+            unset($this->csets);
+        }
+        // $this->csets["secgroups"]=array(
             // array("key"=>"tags","xkey"=>"tagSet","namekey"=>"key","datakey"=>"value")
-        );
+        // );
 
     }/*}}}*/
     public function __destruct()/*{{{*/
@@ -73,6 +77,20 @@ class EC2SecGroups extends EC2
     }/*}}}*/
     private function decodeRawGroups()/*{{{*/
     {
+        $ret=false;
+        if(isset($this->rawdata["requestId"]) && isset($this->rawdata["securityGroupInfo"])){
+            $this->data=array();
+            if(isset($this->rawdata["securityGroupInfo"]["item"])){
+                foreach($this->rawdata["securityGroupInfo"]["item"] as $secgrp){
+                }
+            }
+        }
+    }/*}}}*/
+    private function flattenSecurityGroup($secgrp)/*{{{*/
+    {
+        $ret=false;
+        if(false!==($tgrp=$this->copyKeys($this->ckeys[$datatype],$iarr))){
+        }
     }/*}}}*/
 }
 
