@@ -4,15 +4,14 @@
  * vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker:
  *
  * Started: Monday 23 July 2012, 13:41:11
- * Last Modified: Sunday 22 December 2013, 09:30:11
- * Version: $Id: mysql.class.php 6369 2012-07-27 08:20:55Z pfcallison $
+ * Last Modified: Sunday 20 April 2014, 11:00:42
  */
 
 require_once "base.class.php";
 
 /** MySql Class
  * simple class to connect and do db stuff
- * with mysql
+ * with mysqli
  */
 class MySql extends Base
 {
@@ -63,7 +62,7 @@ class MySql extends Base
             $this->canconnect=true;
         }
         try {
-            $this->conn=mysql_connect($this->dbhost,$this->dbuser,$this->dbpass);
+            $this->conn=mysqli_connect($this->dbhost,$this->dbuser,$this->dbpass);
             $this->connected=true;
             $this->debug("Connected to db host ok: " . $this->dbhost);
         }catch (Exception $e){
@@ -71,7 +70,7 @@ class MySql extends Base
             $this->connected=false;
         }
         try {
-            mysql_select_db($this->dbdb);
+            mysqli_select_db($this->dbdb);
             $this->selected=true;
             $this->debug("DB selected ok: " . $this->dbdb);
         }catch (Exception $e){
@@ -87,7 +86,7 @@ class MySql extends Base
     {
         if($this->conn){
             try{
-                @mysql_close($this->conn);
+                @mysqli_close($this->conn);
             }catch(Exception $e){
                 $this->debug($e->getMessage());
             }
@@ -105,10 +104,10 @@ class MySql extends Base
         $this->rs=null;
         if($this->amOK() && $this->ValidStr($sql)){
             $this->debug("Query: $sql");
-            $this->rs=mysql_query($sql);
+            $this->rs=mysqli_query($sql);
             if(false===$this->rs){
                 $this->error("Query error: $sql");
-                $this->error("mysql said: " . mysql_errno() . ": " . mysql_error());
+                $this->error("mysql said: " . mysqli_errno() . ": " . mysqli_error());
             }
         }else{
             $this->warning("mysql class not ok, or sql not a valid str");
@@ -124,9 +123,9 @@ class MySql extends Base
          */
         $ret=$this->query($sql);
         if($ret){
-            $ret=mysql_insert_id();
+            $ret=mysqli_insert_id();
         }else{
-            $str=mysql_error($this->conn);
+            $str=mysqli_error($this->conn);
             $this->debug($str);
         }
         return $ret;
@@ -136,11 +135,11 @@ class MySql extends Base
         $ret=false;
         $this->query($sql);
         if($this->rs){
-            $cn=mysql_num_rows($this->rs);
+            $cn=mysqli_num_rows($this->rs);
             $this->debug("$cn rows returned");
             if($cn>0){
                 $ret=array();
-                while(false!=($arr=mysql_fetch_assoc($this->rs))){
+                while(false!=($arr=mysqli_fetch_assoc($this->rs))){
                     $ret[]=$arr;
                 }
             }
