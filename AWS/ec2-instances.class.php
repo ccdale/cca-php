@@ -9,7 +9,7 @@
  * ec2-instances.class.php
  *
  * Started: Sunday 24 November 2013, 12:23:29
- * Last Modified: Tuesday 15 April 2014, 11:04:34
+ * Last Modified: Tuesday 22 April 2014, 04:13:04
  * Revision: $Id$
  * Version: 0.00
  */
@@ -79,7 +79,9 @@ class EC2Instances extends EC2
             if(isset($this->rawdata["reservationSet"]["item"])){
                 foreach($this->rawdata["reservationSet"]["item"] as $iset){
                     $tinst=$this->flattenInstance($iset["instancesSet"]["item"]);
-                    $this->data[$tinst["instanceId"]]=$tinst;
+                    if(isset($tinst["instanceId"])){
+                        $this->data[$tinst["instanceId"]]=$tinst;
+                    }
                 }
             }
             $ret=true;
@@ -90,13 +92,26 @@ class EC2Instances extends EC2
     {
         $ret=false;
         if(false!==($tinst=$this->flattenData($iarr,"instances"))){
-            $tinst["state"]=$iarr["instanceState"]["name"];
-            $tinst["statecode"]=$iarr["instanceState"]["code"];
-            $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
+            if(isset($iarr["instanceState"])){
+                $tinst["state"]=$iarr["instanceState"]["name"];
+                $tinst["statecode"]=$iarr["instanceState"]["code"];
+            }else{
+                $tinst["state"]="unknown";
+                $tinst["statecode"]=-1;
+            }
+            if(isset($iarr["placement"])){
+                $tinst["availabilityZone"]=$iarr["placement"]["availabilityZone"];
+            }else{
+                $tinst["availabilityZone"]="unknown";
+            }
             if(isset($tinst["tags"]["Name"])){
                 $tinst["Name"]=$tinst["tags"]["Name"];
             }else{
-                $tinst["Name"]=$tinst["instanceId"];
+                if(isset($tinst["instanceId"])){
+                    $tinst["Name"]=$tinst["instanceId"];
+                }else{
+                    $tinst["Name"]="unknown";
+                }
             }
             $ret=$tinst;
         }

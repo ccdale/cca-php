@@ -9,7 +9,7 @@
  * ec2-secgroups.class.php
  *
  * Started: Monday 14 April 2014, 03:45:03
- * Last Modified: Wednesday 16 April 2014, 14:34:05
+ * Last Modified: Tuesday 22 April 2014, 03:27:17
  * Revision: $Id$
  * Version: 0.00
  */
@@ -29,6 +29,7 @@ class EC2SecGroups extends EC2
     {
         parent::__construct($logg,$accesskey,$secretkey,$region);
         $this->ckeys["secgroups"]=array("ownerId","groupId","groupName","groupDescription");
+        $this->ckeys["ipPermissions"]=array("ipProtocol","fromPort","toPort");
         // this unset is needed to ensure flatten data works correctly.
         if(isset($this->csets)){
             unset($this->csets);
@@ -71,7 +72,8 @@ class EC2SecGroups extends EC2
         }
         $this->addFilterParam($filter);
         if(false!==($this->rawdata=$this->doCurl())){
-            $ret=$this->rawdata;
+            $this->decodeRawGroups();
+            $ret=$this->data;
         }
         return $ret;
     }/*}}}*/
@@ -82,6 +84,7 @@ class EC2SecGroups extends EC2
             $this->data=array();
             if(isset($this->rawdata["securityGroupInfo"]["item"])){
                 foreach($this->rawdata["securityGroupInfo"]["item"] as $secgrp){
+                    $this->data[]=$this->flattenSecurityGroup($secgrp);
                 }
             }
         }
@@ -89,9 +92,35 @@ class EC2SecGroups extends EC2
     private function flattenSecurityGroup($secgrp)/*{{{*/
     {
         $ret=false;
-        if(false!==($tgrp=$this->copyKeys($this->ckeys[$datatype],$iarr))){
+        if(false!==($tgrp=$this->copyKeys($this->ckeys["secgroups"],$secgrp))){
+            if(isset($secgrp["ipPermissions"])){
+                if(false!==($cn=$this->ValidArray($secgrp["ipPermissions"]))){
+                    if($cn>0){
+                        if(isset($secgrp["ipPermissions"]["item"])){
+                            $tper=$this->flattenItem($secgrp["ipPermissions"]["item"]);
+                            foreach($tper as $per){
+                                $ttper=$this->copyKeys($this->ckeys["ipPermissions"],$per);
+                                $ttper["groups"]=false;
+                                if(isset($per["groups"])){
+                                    if(isset($per["groups"]["item"])){
+                                        $ttper["groups"]=$this->flattenItem($per["groups"]["item"]);
+                                    }
+                                }
+                                $ttper["ipRanges"]=false;
+                                if(isset($per["ipRanges"])){
+                                    if(isset($per["ipRanges"]["item"])){
+                                        $ttper["ipRanges"]=$this->flattenItem($per["ipRanges"]["item"]);
+                                    }
+                                }
+                                $tgrp["ipPermissions"][]=$ttper;
+                            }
+                        }
+                    }
+                }
+            }
+            $ret=$tgrp;
         }
+        return $ret;
     }/*}}}*/
 }
-
 ?>

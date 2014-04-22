@@ -9,7 +9,7 @@
  * ec2.class.php
  *
  * Started: Thursday 21 November 2013, 12:30:52
- * Last Modified: Tuesday 15 April 2014, 11:04:39
+ * Last Modified: Tuesday 22 April 2014, 03:03:21
  * Version: $Id$
  */
 
@@ -127,7 +127,7 @@ class EC2 extends Base
             }
         }
     }/*}}}*/
-    /** addParam
+    /** addParam {{{
      * adds a string or array of strings to the parameters array
      *
      * returns: nothing
@@ -261,6 +261,25 @@ class EC2 extends Base
                     if(isset($set[$namekey]) && isset($set[$datakey])){
                         $oarr[$set[$namekey]]=$set[$datakey];
                     }
+                }
+            }
+        }
+        return $oarr;
+    } /*}}}*/
+    /** flattenItem {{{
+     * takes an item array and adds the zero key if required
+     *
+     */
+    protected function flattenItem($arr)
+    {
+        $oarr=false;
+        if(false!==($cn=$this->ValidArray($arr))){
+            if($cn>0){
+                if(isset($arr[0])){
+                    $oarr=$arr;
+                }else{
+                    $oarr=array();
+                    $oarr[]=$arr;
                 }
             }
         }
