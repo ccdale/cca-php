@@ -4,7 +4,7 @@
  * vim: set expandtab tabstop=4 shiftwidth=4 softtabstop=4 foldmethod=marker:
  *
  * Started: Monday 23 July 2012, 13:41:11
- * Last Modified: Sunday 20 April 2014, 11:00:42
+ * Last Modified: Saturday 31 May 2014, 09:37:27
  */
 
 require_once "base.class.php";
@@ -70,7 +70,7 @@ class MySql extends Base
             $this->connected=false;
         }
         try {
-            mysqli_select_db($this->dbdb);
+            mysqli_select_db($this->conn,$this->dbdb);
             $this->selected=true;
             $this->debug("DB selected ok: " . $this->dbdb);
         }catch (Exception $e){
@@ -104,10 +104,10 @@ class MySql extends Base
         $this->rs=null;
         if($this->amOK() && $this->ValidStr($sql)){
             $this->debug("Query: $sql");
-            $this->rs=mysqli_query($sql);
+            $this->rs=mysqli_query($this->conn,$sql);
             if(false===$this->rs){
                 $this->error("Query error: $sql");
-                $this->error("mysql said: " . mysqli_errno() . ": " . mysqli_error());
+                $this->error("mysql said: " . mysqli_errno($this->conn) . ": " . mysqli_error($this->conn));
             }
         }else{
             $this->warning("mysql class not ok, or sql not a valid str");
@@ -123,13 +123,26 @@ class MySql extends Base
          */
         $ret=$this->query($sql);
         if($ret){
-            $ret=mysqli_insert_id();
+            $ret=mysqli_insert_id($this->conn);
         }else{
             $str=mysqli_error($this->conn);
-            $this->debug($str);
+            $this->error($str);
         }
         return $ret;
     } // }}}
+    public function deleteQuery($sql="")/*{{{*/
+    {
+        /*
+         * returns the number of rows deleted or false for delete queries
+         */
+        $ret=$this->query($sql);
+        if($ret){
+            $ret=mysqli_affected_rows($this->conn);
+        }else{
+            $str=mysqli_error($this->conn);
+            $this->error($str);
+        }
+    }/*}}}*/
     public function arrayQuery($sql="") // {{{
     {
         $ret=false;
@@ -146,5 +159,9 @@ class MySql extends Base
         }
         return $ret;
     } // }}}
+    public function escape($str="")/*{{{*/
+    {
+        return mysqli_real_escape_string($this->conn,$str);
+    }/*}}}*/
 }
 ?>

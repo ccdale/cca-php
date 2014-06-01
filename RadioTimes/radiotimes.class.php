@@ -9,7 +9,7 @@
  * radiotimes.class.php
  *
  * Started: Saturday 21 December 2013, 03:11:57
- * Last Modified: Saturday 21 December 2013, 14:03:02
+ * Last Modified: Saturday 31 May 2014, 10:00:26
  * Revision: $Id$
  * Version: 0.00
  */
@@ -68,7 +68,7 @@ class RadioTimes extends Base
             "cast",
             "premiere",
             "film",
-            "repear",
+            "repeat",
             "subtitles",
             "widescreen",
             "newseries",
@@ -93,24 +93,27 @@ class RadioTimes extends Base
     {
         $programs=false;
         if($cid>0){
-            if(false===($atime=$this->cache->getCacheFileTime($cid))){
+            $cfn=$cid . ".psa";
+            if(false===($atime=$this->cache->getCacheFileTime($cfn))){
                 $atime=0;
             }
             $now=time();
             $then=$atime+$this->cachetime;
             if($then>$now){
                 // read data from cache
-                $programs=$this->cache->getCacheFile($cid);
+                $this->info("using cache for RT channel id $cid");
+                $programs=$this->cache->getCacheFile($cfn);
             }else{
                 // cache is too old, so get new data
                 $url=$this->rturl . $cid . ".dat";
+                $this->info("Cache is invalid, retrieving $url");
                 $data=file($url);
-                print $data[0] . "\n";
+                $this->info("data received");
                 $programs=$this->processRTData($data);
-                $this->cache->setCacheFile($cid,$programs);
+                $this->cache->setCacheFile($cfn,$programs);
             }
         }else{
-            print "Invalid channel id: $cid\n";
+            $this->error("Invalid channel id: $cid");
         }
         return $programs;
     }/*}}}*/
@@ -128,16 +131,17 @@ class RadioTimes extends Base
                             if($x==5){
                                 $parr["cast"]=$this->processCast($tmp[$x]);
                             }else{
-                                $parr[$this->fields[$x]]=$tmp[$x];
+                                $parr[$this->fields[$x]]=trim($tmp[$x]);
                             }
                         }
                         if(false!==($dmarr=$this->processRTDate($parr["date"]))){
                             if(false!==($starttime=$this->processRTTime($dmarr,$parr["starttime"]))){
                                 $parr["starttime"]=$starttime;
+                                $parr["endtime"]=$starttime+($parr["duration"]*60);
                             }
-                            if(false!==($endtime=$this->processRTTime($dmarr,$parr["endtime"]))){
-                                $parr["endtime"]=$endtime;
-                            }
+                            // if(false!==($endtime=$this->processRTTime($dmarr,$parr["endtime"]))){
+                                // $parr["endtime"]=$endtime;
+                            // }
                         }
                         $programs[]=$parr;
                     }
@@ -200,7 +204,22 @@ class RadioTimes extends Base
                             }
                         }
                     }else{
-                        $actors=$tmp;
+                        $chact=$tmp[0];
+                        $act=explode("*",$chact);
+                        if(isset($act[1])){
+                            $key=trim($act[0]);
+                            if(isset($actors[$key])){
+                                if(!is_array($actors[$key])){
+                                    $hold=$actors[$key];
+                                    $actors[$key]=array($hold);
+                                }
+                                $actors[$key][]=trim($act[1]);
+                            }else{
+                                $actors[trim($act[0])]=trim($act[1]);
+                            }
+                        }else{
+                            $actors[]=trim($act[0]);
+                        }
                     }
                 }
             }
