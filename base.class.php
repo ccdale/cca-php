@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Friday 24 May 2013, 23:41:08
- * Last Modified: Wednesday  9 October 2013, 10:25:59
+ * Last Modified: Sunday  1 June 2014, 08:59:02
  * Revision: $Id: base.class.php 7515 2013-06-25 12:25:34Z chris.allison $
  * Version: 0.00
  */
@@ -44,6 +44,10 @@ class Base
             }
         }
         return $ret;
+    }/*}}}*/
+    public function ValidString($str)/*{{{*/
+    {
+        return $this->ValidStr($str);
     }/*}}}*/
     public function ValidStr($str) /*{{{*/
     {
@@ -140,5 +144,24 @@ class Base
     {
         $this->loghelper($msg,LOG_ERR);
     } // }}}
+    /** unixPath {{{
+     * ensures that $path is in the correct unix format for a directory
+     *
+     * changes backslash "\" path identifiers to forwardslash (windows->unix)
+     * adds a trailing backslash if necessary.
+     * 
+     * @param mixed $path 
+     * @access public
+     * @return string
+     */
+    public function unixPath($path)
+    {
+        $tpath=str_replace(chr(92),'/',$path);
+        if(substr($tpath,-1)=="/"){
+            return $path;
+        }else{
+            return $path . "/";
+        }
+    } /*}}}*/
 }
 ?>

@@ -8,7 +8,7 @@
  *
  * Started: Sunday 18 January 2009, 22:43:44
  * version: 0.01
- * Last Modified: Friday  2 October 2009, 22:27:06
+ * Last Modified: Sunday  1 June 2014, 09:19:39
  *
  * $Id: process.class.php 32 2009-10-02 21:28:41Z chris $
  */
@@ -23,8 +23,10 @@ Class Process // {{{
     function __construct($pid=0) // {{{
     {
         $this->setPid($pid);
-        $this->getthisCmdline();
-        $this->starttime=time();
+        if($this->exists()){
+            $this->getthisCmdline();
+            $this->starttime=time();
+        }
     } // }}}
     function __destruct() // {{{
     {
