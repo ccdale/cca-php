@@ -10,7 +10,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday  1 June 2014, 08:50:32
- * Last Modified: Sunday  1 June 2014, 09:25:41
+ * Last Modified: Sunday  1 June 2014, 09:33:11
  */
 
 require_once "base.class.php";
@@ -36,6 +36,11 @@ class DvbStreamer extends Base
         $this->dvbsdir=$this->unixPath($home) . ".dvbstreamer";
         $this->pidfile=$this->unixPath($this->dvbsdir) . "dvbstreamer-" . $this->adaptor . ".pid";
         $this->cmd="/usr/bin/dvbstreamer -a " . $this->adaptor . " -u " . $this->user . " -p " . $this->pass . " -d";
+        if($this->isRunning()){
+            $this->info("dvbstreamer for adaptor " . $this->adaptor . " is already running");
+        }else{
+            $this->info("dvbstreamer for adaptor " . $this->adaptor . " is not running.");
+        }
     }/*}}}*/
     public function __destruct()/*{{{*/
     {
