@@ -10,7 +10,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday  1 June 2014, 08:50:32
- * Last Modified: Sunday  1 June 2014, 19:55:45
+ * Last Modified: Tuesday  3 June 2014, 06:10:30
  */
 
 require_once "base.class.php";
@@ -100,7 +100,7 @@ class DvbStreamer extends Base
             $this->debug("pidfile exists");
             $cpid=file_get_contents($this->pidfile);
             $pdir="/proc/$cpid";
-            if(file_exists($cpid) && is_dir($cpid)){
+            if(file_exists($pdir) && is_dir($pdir)){
                 $this->debug("process from pidfile exists");
                 $ret=true;
             }else{
