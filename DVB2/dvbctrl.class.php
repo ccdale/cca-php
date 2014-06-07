@@ -10,7 +10,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Saturday  7 June 2014, 15:54:30
+ * Last Modified: Saturday  7 June 2014, 16:35:51
  * Revision: $Id$
  * Version: 0.00
  */
@@ -281,6 +281,34 @@ class DVBCtrl extends Base
             $waiting--;
             sleep(1);
         }
+    } /*}}}*/
+    private function cleanupServiceFilters($force=false) /*{{{*/
+    {
+        $ret=false;
+        if(false!==($sfarr=$this->lsRecording(false))){
+            $counter=0;
+            if(0!==($cn=count($sfarr))){
+                foreach($sfarr as $filter=>$service){
+                    if($force){
+                        $this->stopFilter($filter);
+                    }
+                    if($counter!==0){
+                        if($this->isFilterFree($filter)){
+                            if(false!==$this->removeFilter($filter)){
+                                if(is_bool($ret)){
+                                    $ret=array();
+                                }
+                                $ret[]=$filter;
+                            }
+                        }
+                    }else{
+                        $ret=true;
+                    }
+                    $counter++;
+                }
+            }
+        }
+        return $ret;
     } /*}}}*/
     public function request($cmd="",$argarr="",$auth=true)/*{{{*/
     {
@@ -630,34 +658,6 @@ class DVBCtrl extends Base
             return true;
         }
         return false;
-    } /*}}}*/
-    public function cleanupServiceFilters($force=false) /*{{{*/
-    {
-        $ret=false;
-        if(false!==($sfarr=$this->lsRecording(false))){
-            $counter=0;
-            if(0!==($cn=count($sfarr))){
-                foreach($sfarr as $filter=>$service){
-                    if($force){
-                        $this->stopFilter($filter);
-                    }
-                    if($counter!==0){
-                        if($this->isFilterFree($filter)){
-                            if(false!==$this->removeFilter($filter)){
-                                if(is_bool($ret)){
-                                    $ret=array();
-                                }
-                                $ret[]=$filter;
-                            }
-                        }
-                    }else{
-                        $ret=true;
-                    }
-                    $counter++;
-                }
-            }
-        }
-        return $ret;
     } /*}}}*/
     public function setFavsonlyOn() /*{{{*/
     {
