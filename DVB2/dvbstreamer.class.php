@@ -10,7 +10,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday  1 June 2014, 08:50:32
- * Last Modified: Tuesday  3 June 2014, 06:10:30
+ * Last Modified: Saturday  7 June 2014, 09:45:00
  */
 
 require_once "base.class.php";
@@ -93,7 +93,7 @@ class DvbStreamer extends Base
             return false;
         }
     }/*}}}*/
-    private function isRunning()/*{{{*/
+    public function isRunning()/*{{{*/
     {
         $ret=false;
         if(file_exists($this->pidfile)){
