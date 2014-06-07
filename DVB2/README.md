@@ -103,15 +103,72 @@ Check whether it will be necessary to returne to record the named service
 
 $service string name of service to check
 
+````
     public function filterNumberForFile($file="") 
+````
+Which filter is currently recording to the named file
+
+$file string file name to check for
+
+````
     public function serviceForFile($file="") 
+````
+Which service is currently being streamed into the named file
+
+$file string file name to check for
+
+````
     public function recordNewService($service,$file) 
+````
+Start to record a new service to a new file
+
+$service string Channel name to record
+$file string file name to record into
+
+````
     public function stopRecording($file="") 
+````
+Stop recording the named file
+
+$file string file name to stop recording
+
+````
     public function stopByFilterNumber($filternumber=false) 
+````
+Stop recording the file indicated by the filter number supplied
+
+$filternumber int the number of the filter to stop recording
+
+````
     public function split($file="",$newfilename="") 
+````
+Stop recording into the current named file and continue into the newly named
+file
+
+$file string currently recorded file
+$newfilename string name of the new file to continue recording into
+
+````
     public function streamNewService($service,$port) 
+````
+Start streaming the named service to the named udp port
+
+$service string the service to start streaming
+$port int the udp port number to stream to
+
+````
     public function stopFilter($filter) 
-    public function cleanupServiceFilters($force=false) 
+````
+Stop the named filter
+
+$filter int the filter to stop recording/streaming
+
+````
     public function setFavsonlyOn() 
+````
+Set favsonly on
+
+````
     public function setFavsonlyOff() 
 ````
+Set favsonly off
