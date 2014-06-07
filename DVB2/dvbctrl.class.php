@@ -10,7 +10,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Saturday  7 June 2014, 09:53:52
+ * Last Modified: Saturday  7 June 2014, 15:54:30
  * Revision: $Id$
  * Version: 0.00
  */
@@ -258,6 +258,30 @@ class DVBCtrl extends Base
         }
         return false;
     } /*}}}*/
+    private function waitForSignalLock() /*{{{*/
+    {
+        $waiting=19;
+        while($waiting>0){
+            if(false!=($arr=$this->request("festatus"))){
+                // $this->debug("waitForSignalLock: resultcode: {$arr['resultcode']}");
+                // $this->debug("waitForSignalLock: status: {$arr['status']}");
+                if(isset($arr["data"][0])){
+                    $this->debug("waitForSignalLock: " . trim($arr['data'][0]) . " waiting: $waiting");
+                    if("Sync"==($tmp=substr(trim($arr["data"][0]),-4))){
+                        // print "wait time for lock: " . 19-$waiting . "\n";
+                        $waiting=0;
+                    }
+                }else{
+                    $this->debug("waitForSignalLock: request returned array");
+                    $this->debug(print_r($arr,true));
+                }
+            }else{
+                $this->debug("false returned from request for festatus: $waiting");
+            }
+            $waiting--;
+            sleep(1);
+        }
+    } /*}}}*/
     public function request($cmd="",$argarr="",$auth=true)/*{{{*/
     {
         $ret=false;
@@ -331,30 +355,6 @@ class DVBCtrl extends Base
             // (the output of lsdvb takes a bit of time to show
             // it has changed channel)
             sleep(2);
-        }
-    } /*}}}*/
-    public function waitForSignalLock() /*{{{*/
-    {
-        $waiting=19;
-        while($waiting>0){
-            if(false!=($arr=$this->request("festatus"))){
-                // $this->debug("waitForSignalLock: resultcode: {$arr['resultcode']}");
-                // $this->debug("waitForSignalLock: status: {$arr['status']}");
-                if(isset($arr["data"][0])){
-                    $this->debug("waitForSignalLock: " . trim($arr['data'][0]) . " waiting: $waiting");
-                    if("Sync"==($tmp=substr(trim($arr["data"][0]),-4))){
-                        // print "wait time for lock: " . 19-$waiting . "\n";
-                        $waiting=0;
-                    }
-                }else{
-                    $this->debug("waitForSignalLock: request returned array");
-                    $this->debug(print_r($arr,true));
-                }
-            }else{
-                $this->debug("false returned from request for festatus: $waiting");
-            }
-            $waiting--;
-            sleep(1);
         }
     } /*}}}*/
     public function setmrl($file,$filternumber=0) /*{{{*/
