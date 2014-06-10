@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 /*
@@ -10,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday  1 June 2014, 08:50:32
- * Last Modified: Saturday  7 June 2014, 09:45:00
+ * Last Modified: Tuesday 10 June 2014, 11:51:52
  */
 
 require_once "base.class.php";

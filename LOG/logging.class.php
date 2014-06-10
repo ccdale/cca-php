@@ -9,7 +9,7 @@
  * daemon@cca.me.uk
  *
  * Started: Saturday 19 December 2009, 07:00:46
- * Last Modified: Tuesday  8 October 2013, 23:38:31
+ * Last Modified: Tuesday 10 June 2014, 12:08:38
  * Version: $Id: logging.class.php 447 2010-07-28 06:41:05Z chris $
  */
 
@@ -21,11 +21,11 @@ class Logging
     private $minlevel=0;
     private $debugtoconsole=false;
     private $consoletimestamp=true;
-    private $tracelevel=0;
+    private $tracelevel=-1;
     private $consoleloglevel=0;
 
     /* __construct  */
-    public function __construct($toconsole=true,$ident="PHP",$facility=0,$minlevel=LOG_INFO,$debugtoconsole=false,$consoletimestamp=true,$tracelevel=0,$consoleloglevel=LOG_NOTICE) // {{{
+    public function __construct($toconsole=true,$ident="PHP",$facility=0,$minlevel=LOG_INFO,$debugtoconsole=false,$consoletimestamp=true,$tracelevel=-1,$consoleloglevel=LOG_NOTICE) // {{{
     {
         $fac=$facility?$facility:LOG_CONS | LOG_ODELAY | LOG_PID;
         openlog($ident,$fac,LOG_USER);
@@ -37,6 +37,7 @@ class Logging
          * set $tracelevel to 0,1 or 2
          * then, DEBUG level messages will contain the calling
          * stack trace
+         * tracelevel=-1: no output at all apart from the actual debug message
          * tracelevel=0: no stack trace
          * tracelevel=1: caller function/class/file/line number
          * tracelevel=2: full stack trace
@@ -69,17 +70,19 @@ class Logging
         $junk=array_shift($trace);
         $caller=array_shift($trace);
         $op="";
-        if(isset($caller["function"])){
-            $op="In: " . $caller["function"];
-            if(isset($caller["class"]) && strlen($caller["class"])){
-                $op.=" in class: " . $caller["class"];
-            }
-            $op.=" Line: " . $caller["line"];
-            $op.=" file: " . $caller["file"] . PHP_EOL;
-            $cn=count($trace);
-            if($cn && $this->tracelevel>1){
-                foreach($trace as $k=>$v){
-                    $op.="   func: " . $v["function"] . " class: " . $v["class"] . " line: " . $v["line"] . " file: " . $v["file"] . PHP_EOL;
+        if($this->tracelevel>-1){
+            if(isset($caller["function"])){
+                $op="In: " . $caller["function"];
+                if(isset($caller["class"]) && strlen($caller["class"])){
+                    $op.=" in class: " . $caller["class"];
+                }
+                $op.=" Line: " . $caller["line"];
+                $op.=" file: " . $caller["file"] . PHP_EOL;
+                $cn=count($trace);
+                if($cn && $this->tracelevel>1){
+                    foreach($trace as $k=>$v){
+                        $op.="   func: " . $v["function"] . " class: " . $v["class"] . " line: " . $v["line"] . " file: " . $v["file"] . PHP_EOL;
+                    }
                 }
             }
         }

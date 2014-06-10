@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 /*
@@ -10,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Saturday  7 June 2014, 16:35:51
+ * Last Modified: Tuesday 10 June 2014, 18:02:07
  * Revision: $Id$
  * Version: 0.00
  */
@@ -31,6 +30,9 @@ class DVBCtrl extends Base
     private $DVB;
     private $dvbismine=false;
     private $canconnect=false;
+    private $rcache=false;
+    private $rcachetime=0;
+    private $favsonly=false;
 
     public function __construct($logg=false,$host="",$user="",$pass="",$adaptor=0,$dvb=false)/*{{{*/
     {
@@ -173,11 +175,37 @@ class DVBCtrl extends Base
     private function checkReply($reply)/*{{{*/
     {
         $ret=false;
-        if(false!==$reply && is_array($reply) && isset($reply["resultcode"])){
-            if($reply["resultcode"]==0){
-                $ret=true;
+        $tmp=print_r($reply,true);
+        if(false!==$reply){
+            if(false!==($cn=$this->ValidArray($reply))){
+                if(isset($reply["resultcode"])){
+                    if(isset($reply["status"])){
+                        if($reply["resultcode"]==0){
+                            // if($reply["status"]=="OK"){
+                                $ret=true;
+                            // }else{
+                                // $this->warning("checkReply: bad status: $tmp");
+                            // }
+                        }else{
+                            $this->warning("checkReply: bad resultcode: $tmp");
+                        }
+                    }else{
+                        $this->warning("checkReply: status not set: $tmp");
+                    }
+                }else{
+                    $this->warning("checkReply: resultcode not set: $tmp");
+                }
+            }else{
+                $this->warning("checkReply: not a valid array: $tmp");
             }
+        }else{
+            $this->warning("checkReply: reply is false: $tmp");
         }
+        // if(false!==$reply && is_array($reply) && isset($reply["resultcode"])){
+            // if($reply["resultcode"]==0){
+                // $ret=true;
+            // }
+        // }
         return $ret;
     }/*}}}*/
     private function favsOnly($filternumber) /*{{{*/
@@ -267,7 +295,7 @@ class DVBCtrl extends Base
                 // $this->debug("waitForSignalLock: status: {$arr['status']}");
                 if(isset($arr["data"][0])){
                     $this->debug("waitForSignalLock: " . trim($arr['data'][0]) . " waiting: $waiting");
-                    if("Sync"==($tmp=substr(trim($arr["data"][0]),-4))){
+                    if("Sync  ]"==($tmp=substr(trim($arr["data"][0]),-7))){
                         // print "wait time for lock: " . 19-$waiting . "\n";
                         $waiting=0;
                     }
@@ -310,6 +338,77 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
+    private function getsf($filtername)/*{{{*/
+    {
+        $ret=false;
+        if(false!==($cn=$this->ValidString($filtername))){
+            if(false!==($reply=$this->request("getsf",$filtername))){
+                // we are only expecting one line of data
+                if(false!==($cn=$this->ValidString($reply["data"][0]))){
+                    $tmp=explode(":",$reply["data"][0]);
+                    $service=trim($tmp[1]);
+                    if(false!==($cn=$this->ValidString($service))){
+                        $ret=str_replace('"','',$service);
+                    }else{
+                        $this->warning("getsf: bad data for service: $filtername: " . print_r($reply,true));
+                    }
+                }else{
+                    $this->warning("getsf: no data returned from dvbstreamer for filter: $filtername");
+                }
+            }else{
+                $this->warning("getsf: no reply from dvbstreamer for filter: $filtername");
+            }
+        }else{
+            $this->warning("getsf: not a valid string: $filtername");
+        }
+        return $ret;
+    }/*}}}*/
+    private function getsfmrl($filtername)/*{{{*/
+    {
+        $ret=false;
+        if(false!==($cn=$this->ValidString($filtername))){
+            if(false!=($reply=$this->request("getsfmrl",$filtername))){
+                // we are only expecting one line of data
+                if(false!==($cn=$this->ValidString($reply["data"][0]))){
+                    $mrl=trim($reply["data"][0]);
+                    $ret=$mrl;
+                }else{
+                    $this->warning("getsfmrl: no data returned from dvbstreamer for filter: $filtername");
+                }
+            }else{
+                $this->warning("getsfmrl: no reply from dvbstreamer for filter: $filtername");
+            }
+        }else{
+            $this->warning("getsfmrl: not a valid string: $filtername");
+        }
+        return $ret;
+    }/*}}}*/
+    private function decodeMrl($mrl)/*{{{*/
+    {
+        $ret=false;
+        if(false!==($cn=$this->ValidString($mrl))){
+            if($cn>4){
+                $tmp=explode(":",$mrl);
+                $cn=count($tmp);
+                if(2==$cn){
+                    $type=trim($tmp[0]);
+                    if($type=="null"){
+                        $fn="";
+                    }else{
+                        $fn=str_replace("//","",$tmp[1]);
+                    }
+                    $ret=array("type"=>$type,"filename"=>$fn);
+                }else{
+                    $this->warning("decodeMrl: $cn parts found in mrl string, was expecting 2: $mrl");
+                }
+            }else{
+                $this->warning("decodeMrl: string is not long enough to be an mrl: $mrl");
+            }
+        }else{
+            $this->warning("decodeMrl: not a valid string: $mrl");
+        }
+        return $ret;
+    }/*}}}*/
     public function request($cmd="",$argarr="",$auth=true)/*{{{*/
     {
         $ret=false;
@@ -336,9 +435,9 @@ class DVBCtrl extends Base
                     $ret=$reply;
                     // $this->debug("request: $tmp: OK");
                 }else{
-                    // $this->debug("request: $tmp: " . $reply["resultcode"]);
+                    $this->debug("request: $tmp: " . $reply["resultcode"]);
                     $tmp=print_r($reply,true);
-                    // $this->debug($tmp);
+                    $this->debug($tmp);
                 }
             }else{
                 $this->warning("request: not connected");
@@ -348,11 +447,24 @@ class DVBCtrl extends Base
         }
         return $ret;
     }/*}}}*/
+    public function lsServices()/*{{{*/
+    {
+        $ret=false;
+        if(false!==($reply=$this->request("lslcn"))){
+            $info=array();
+            foreach($reply["data"] as $dataline){
+                $la=explode(":",$dataline);
+                $info[str_replace('"','',trim($la[0]))]=str_replace('"','',trim($la[1]));
+            }
+            $ret=$info;
+        }
+        return $ret;
+    }/*}}}*/
     public function serviceInfo($service)  /*{{{*/
     {
         $ret=false;
         if(is_string($service) && $service){
-            if(false!=($reply=$this->request("serviceinfo",$service))){
+            if(false!=($reply=$this->request("serviceinfo","'$service'"))){
                 $info=array();
                 foreach($reply["data"] as $dataline){
                     $la=explode(":",$dataline);
@@ -366,7 +478,7 @@ class DVBCtrl extends Base
     public function select($service,$filternumber=0,$nowait=false) /*{{{*/
     {
         if($filternumber==0){
-            $this->request("select",$service);
+            $this->request("select","'$service'");
         }else{
             $filter="dvb" . $filternumber;
             if(!$this->filterExists($filter)){
@@ -403,7 +515,7 @@ class DVBCtrl extends Base
             $this->request("setsfmrl",array($filter,STREAMADDRESS . $port));
         }
     } /*}}}*/
-    public function lsRecording($usecache=true) /*{{{*/
+    public function xlsRecording($usecache=true) /*{{{*/
     {
         $ret=false;
         if($this->rcache!==false && $usecache){
@@ -411,6 +523,9 @@ class DVBCtrl extends Base
         }
         if(false!==($reply=$this->request("lssfs"))){
             $ln=count($reply["data"]);
+            $tmp=print_r($reply,true);
+            $this->debug("lsrecording");
+            $this->debug($tmp);
             if($ln){
                 $ret=array();
                 foreach($reply["data"] as $dataline){
@@ -437,6 +552,51 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
+    public function lsRecording($usecache=true)/*{{{*/
+    {
+        $ret=false;
+        if($this->rcache!==false && $usecache){
+            return $this->rcache;
+        }
+        if(false!==($reply=$this->request("lssfs"))){
+            if(false!==($cn=$this->ValidArray($reply["data"]))){
+                if($cn){
+                    $op=array();
+                    for($filter=0;$filter<$cn;$filter++){
+                        $filtername=$reply["data"][$filter];
+                        if(false!==($service=$this->getsf($filtername))){
+                            if(false!==($mrl=$this->getsfmrl($filtername))){
+                                if(false!==($top=$this->decodeMrl($mrl))){
+                                    $op[$filter]=array("type"=>$top["type"],"filename"=>$top["filename"],"channel"=>$service);
+                                    if(false!==($info=$this->serviceInfo($service))){
+                                        $op[$filter]["mux"]=$info["Multiplex UID"];
+                                    }else{
+                                        $this->warning("lsRecording: failed to retrieve service info data for service: $service");
+                                    }
+                                }else{
+                                    $this->warning("lsRecording: failed to decode mrl: $mrl");
+                                }
+                            }else{
+                                $this->warning("lsRecording: no mrl returned for filter: $filtername");
+                            }
+                        }else{
+                            $this->warning("lsRecording: no service returned for filter: $filtername");
+                        }
+                    }
+                    $ret=$op;
+                    $this->rcache=$op;
+                    $this->rcachetime=time();
+                }else{
+                    $this->warning("lsRecording: data returned but no lines from dvbstreamer");
+                }
+            }else{
+                $this->warning("lsRecording: no data from dvbstreamer");
+            }
+        }else{
+            $this->warning("lsRecording: no reply from dvbstreamer");
+        }
+        return $ret;
+    }/*}}}*/
     public function safeToRecordService($service) /*{{{*/
     {
         $ret=false;
@@ -495,6 +655,7 @@ class DVBCtrl extends Base
     public function recordNewService($service,$file) /*{{{*/
     {
         $ret=false;
+        $freefilternumber=0;
         if((false!==$this->safeToRecordService($service)) && is_string($file) && $file){
             if(-1!==($freefilternumber=$this->findFreeFilter())){
                 $this->select($service,$freefilternumber);
@@ -509,12 +670,12 @@ class DVBCtrl extends Base
                     // }else{
                         // print "service $srv does not equal $service\n";
                     }
-                // }else{
-                    // print "cant find service for file: $file\n";
+                }else{
+                    $this->warning("cant find service for file: $file");
                 }
             }
-        // }else{
-            // print "not safe for $service with file: $file\n";
+        }else{
+            $this->warning("not safe for $service with file: $file");
         }
         // print "pausing for 20 seconds\n";
         // sleep(20);
@@ -522,6 +683,9 @@ class DVBCtrl extends Base
     } /*}}}*/
     public function stopRecording($file="") /*{{{*/
     {
+        // $this->request("setmrl","null://");
+        // return true;
+
         $ret=false;
         if(-1!==($filternumber=$this->filterNumberForFile($file))){
             if($filternumber==0){
@@ -544,6 +708,8 @@ class DVBCtrl extends Base
                         }
                          */
                         $ret=true;
+                    }else{
+                        $this->warning("Failed to stop recording into $file");
                     }
                 }
             }
