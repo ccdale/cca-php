@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday  1 June 2014, 08:50:32
- * Last Modified: Tuesday 10 June 2014, 11:51:52
+ * Last Modified: Wednesday 11 June 2014, 11:01:32
  */
 
 require_once "base.class.php";
@@ -77,6 +77,10 @@ class DvbStreamer extends Base
             $this->debug("starting process for adaptor: " . $this->adaptor);
             $lastline=exec($this->cmd,$op,$ecode);
             $this->debug("Checking to see if process started ok");
+            // it would appear that it writes it's pid file straight
+            // away.  we will need to wait a bit after the pid file
+            // exists for it to fully start up, so give it 5 seconds
+            sleep(5);
             // we may need to sleep a bit here to
             // allow dvbstreamer to write it't pid file
             // give it 10 seconds
