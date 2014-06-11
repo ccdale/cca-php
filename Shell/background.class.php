@@ -10,7 +10,7 @@
  *
  * Started: Wednesday 28 January 2009, 01:20:21
  * Version:
- * Last Modified: Tuesday 13 July 2010, 10:12:57
+ * Last Modified: Wednesday 11 June 2014, 10:42:33
  *
  * $Id: background.class.php 303 2010-07-13 10:33:08Z chris $
  */
@@ -126,6 +126,11 @@ class BackgroundCommand
     {
         return filesize($this->outputfile)?true:false;
     }
+    public function outputSize()/*{{{*/
+    {
+        clearstatcache($this->outputfile);
+        return filesize($this->outputfile);
+    }/*}}}*/
     public function getoutput()
     {
         return file_get_contents($this->outputfile);
