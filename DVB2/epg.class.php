@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday 15 June 2014, 09:52:57
- * Last Modified: Sunday 15 June 2014, 19:00:30
+ * Last Modified: Sunday 15 June 2014, 19:07:51
  * Revision: $Id$
  * Version: 0.00
  */
@@ -305,6 +305,27 @@ class EPG extends DVBCtrl
         $sql.=$esql;
         $this->mx->query($sql);
     }/*}}}*/
+    private function normaliseSinfo($sinfo)/*{{{*/
+    {
+        foreach($this->infomap as $key=>$val){
+            if($key!=="conditionalaccess" && $key!=="type"){
+                $sinfo[$key]=$sinfo[$val];
+            }
+        }
+        $sinfo["conditionalaccess"]=$sinfo["Conditional Access?"]=="Free to Air"?0:1;
+        switch($sinfo["Type"]){
+        case "Data":
+            $sinfo["type"]="d";
+            break;
+        case "Digital Radio":
+            $sinfo["type"]="r";
+            break;
+        default:
+            $sinfo["type"]="t";
+            break;
+        }
+        return $sinfo;
+    }/*}}}*/
     private function freeviewServiceUpdate()/*{{{*/
     {
         $ret=false;
@@ -317,18 +338,7 @@ class EPG extends DVBCtrl
                 $this->info("$cn services to check");
                 foreach($lcns as $lcn=>$channelname){
                     if(false!==($sinfo=$this->serviceInfo($channelname))){
-                        $sinfo["conditionalaccess"]=$sinfo["Conditional Access?"]=="Free to Air"?0:1;
-                        switch($sinfo["Type"]){
-                        case "Data":
-                            $sinfo["type"]="d";
-                            break;
-                        case "Digital Radio":
-                            $sinfo["type"]="r";
-                            break;
-                        default:
-                            $sinfo["type"]="t";
-                            break;
-                        }
+                        $sinfo=$this->normaliseSinfo($sinfo);
                         $sql="select * from freeview where id=$lcn";
                         if(false!==($arr=$this->mx->arrayQuery($sql))){
                             if(false===($junk=$this->compareDBtoNet($arr[0],$sinfo))){
