@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Sunday 15 June 2014, 11:04:47
+ * Last Modified: Sunday 15 June 2014, 11:23:47
  * Revision: $Id$
  * Version: 0.00
  */
@@ -18,21 +18,21 @@ require_once "base.class.php";
 
 class DVBCtrl extends Base
 {
-    private $host;
-    private $port;
-    private $user;
-    private $pass;
-    private $adaptor;
-    private $connecttimeout=10;
-    private $fp=false;
-    private $connected=false;
-    private $authenticated=false;
-    private $DVB;
-    private $dvbismine=false;
-    private $canconnect=false;
-    private $rcache=false;
-    private $rcachetime=0;
-    private $favsonly=false;
+    protected $host;
+    protected $port;
+    protected $user;
+    protected $pass;
+    protected $adaptor;
+    protected $connecttimeout=10;
+    protected $fp=false;
+    protected $connected=false;
+    protected $authenticated=false;
+    protected $DVB;
+    protected $dvbismine=false;
+    protected $canconnect=false;
+    protected $rcache=false;
+    protected $rcachetime=0;
+    protected $favsonly=false;
 
     public function __construct($logg=false,$host="",$user="",$pass="",$adaptor=0,$dvb=false)/*{{{*/
     {
@@ -344,7 +344,7 @@ class DVBCtrl extends Base
         if(false!==($cn=$this->ValidString($filtername))){
             if(false!==($reply=$this->request("getsf",$filtername))){
                 // we are only expecting one line of data
-                if(false!==($cn=$this->ValidString($reply["data"][0]))){
+                if(isset($reply["data"][0]) && false!==($cn=$this->ValidString($reply["data"][0]))){
                     $tmp=explode(":",$reply["data"][0]);
                     $service=trim($tmp[1]);
                     if(false!==($cn=$this->ValidString($service))){
