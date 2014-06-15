@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday 15 June 2014, 09:52:57
- * Last Modified: Sunday 15 June 2014, 10:52:58
+ * Last Modified: Sunday 15 June 2014, 19:00:30
  * Revision: $Id$
  * Version: 0.00
  */
@@ -23,6 +23,8 @@ class EPG extends DVBCtrl
     private $numevents=0;
     private $xml=false;
     private $warningcn=0;
+    private $infomap;
+    private $dbkeys;
 
     public function __construct($logg=false,$host="",$user="",$pass="",$adaptor=0,$dvb=false,$mx=false,$truncate=true)/*{{{*/
     {
@@ -36,6 +38,27 @@ class EPG extends DVBCtrl
             $this->mx->query("truncate epg");
             $this->debug("epg table truncated");
         }
+        $this->infomap=array(
+            "networkid"=>"ID",
+            "mux"=>"Multiplex UID",
+            "source"=>"Source",
+            "defaultauth"=>"Default Authority",
+            "pmtpid"=>"PMT PID",
+            "channelname"=>"Name",
+            "conditionalaccess"=>"conditionalaccess",
+            "type"=>"type"
+        );
+        $this->dbkeys=array(
+            "networkid",
+            "mux",
+            "source",
+            "defaultauth",
+            "pmtpid",
+            "channelname",
+            "conditionalaccess",
+            "type"
+        );
+        $this->freeviewServiceUpdate();
         $this->xml=new XMLReader();
     }/*}}}*/
     public function __destruct()/*{{{*/
@@ -227,6 +250,110 @@ class EPG extends DVBCtrl
             $this->mx->query($tsql);
             $this->numevents++;
         }
+    }/*}}}*/
+    private function compareDBtoNet($dbarr,$netarr)/*{{{*/
+    {
+        $equal=true;
+        foreach($this->infomap as $key=>$val){
+            if($dbarr[$key]!=$netarr[$val]){
+                $equal=false;
+                break;
+            }
+        }
+        return $equal;
+    }/*}}}*/
+    private function makeSqlString($str)/*{{{*/
+    {
+        $tmp=$str;
+        // strip outer quotes
+        if('"'==($junk=substr($tmp,0,1))){
+            $tmp=substr($tmp,1);
+        }
+        if('"'==($junk=substr($tmp,strlen($tmp)-1,1))){
+            $tmp=substr($tmp,0,strlen($tmp)-1);
+        }
+        $tmp=$this->mx->escape($str);
+        return "'$tmp'";
+    }/*}}}*/
+    private function subSql($sinfo)/*{{{*/
+    {
+        $sql="";
+        foreach($this->dbkeys as $key){
+            if($key=="conditionalaccess"){
+                $tmp=$key . "=" . $sinfo[$key];
+            }else{
+                $tmp=$key . "=" . $this->makeSqlString($sinfo[$key]);
+            }
+            if(strlen($sql)){
+                $sql.=", $tmp";
+            }else{
+                $sql=$tmp;
+            }
+        }
+        return $sql;
+    }/*}}}*/
+    private function updateChan($sinfo,$lcn,$newchan=false)/*{{{*/
+    {
+        if($newchan){
+            $sql="insert into freeview set id=$lcn, ";
+            $esql="";
+        }else{
+            $sql="update freeview set ";
+            $esql=" where id=$lcn";
+        }
+        $sql.=$this->subSql($sinfo);
+        $sql.=$esql;
+        $this->mx->query($sql);
+    }/*}}}*/
+    private function freeviewServiceUpdate()/*{{{*/
+    {
+        $ret=false;
+        $newchans=0;
+        $updatechans=0;
+        $samechans=0;
+        $this->info("updating services");
+        if(false!==($lcns=$this->lsServices())){
+            if(false!==($cn=$this->ValidArray($lcns))){
+                $this->info("$cn services to check");
+                foreach($lcns as $lcn=>$channelname){
+                    if(false!==($sinfo=$this->serviceInfo($channelname))){
+                        $sinfo["conditionalaccess"]=$sinfo["Conditional Access?"]=="Free to Air"?0:1;
+                        switch($sinfo["Type"]){
+                        case "Data":
+                            $sinfo["type"]="d";
+                            break;
+                        case "Digital Radio":
+                            $sinfo["type"]="r";
+                            break;
+                        default:
+                            $sinfo["type"]="t";
+                            break;
+                        }
+                        $sql="select * from freeview where id=$lcn";
+                        if(false!==($arr=$this->mx->arrayQuery($sql))){
+                            if(false===($junk=$this->compareDBtoNet($arr[0],$sinfo))){
+                                $this->updateChan($sinfo,$lcn);
+                                $updatechans++;
+                            }else{
+                                $samechans++;
+                            }
+                        }else{
+                            $this->info("New channel: " . $sinfo["Name"]);
+                            $this->updateChan($sinfo,$lcn,true);
+                            $newchans++;
+                        }
+                    }else{
+                        $this->warning("Failed to retreive info for $lcn: $channelname");
+                    }
+                }
+            }else{
+                $this->warning("No services from dvbstreamer");
+            }
+        }else{
+            $this->warning("failed to retrieive services from dvbstreamer");
+        }
+        $this->info("Freeview Update: $newchans new, $updatechans updated, $samechans remain the same");
+        return $ret;
     }/*}}}*/
     public function getNumEvents()/*{{{*/
     {
