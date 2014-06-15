@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Tuesday 10 June 2014, 18:02:07
+ * Last Modified: Sunday 15 June 2014, 08:55:31
  * Revision: $Id$
  * Version: 0.00
  */
@@ -33,6 +33,7 @@ class DVBCtrl extends Base
     private $rcache=false;
     private $rcachetime=0;
     private $favsonly=false;
+    private $epgcapturing=false;
 
     public function __construct($logg=false,$host="",$user="",$pass="",$adaptor=0,$dvb=false)/*{{{*/
     {
@@ -114,6 +115,39 @@ class DVBCtrl extends Base
         }
         $this->error("failed to authenticate");
         return false;
+    }/*}}}*/
+    private function rcvEpgEvent()/*{{{*/
+    {
+        $ret=false;
+        $msg="";
+        $eventstarted=false;
+        $incompleteevent=true;
+        if($this->fp){
+            while($incompleteevent){
+                if($eventstarted){
+                    $waitfor="</event>";
+                }else{
+                    $waitfor="<event ";
+                }
+                $tmp=fgets($this->fp);
+                if(false!==($pos=strpos($tmp,$waitfor))){
+                    if($eventstarted){
+                        $msg.=$tmp;
+                        $eventstarted=false;
+                        $incompleteevent=false;
+                    }else{
+                        $msg=$tmp;
+                        $eventstarted=true;
+                    }
+                }else{
+                    if($eventstarted){
+                        $msg.=$tmp;
+                    }
+                }
+            }
+            $ret=$msg;
+        }
+        return $ret;
     }/*}}}*/
     private function rcvData()/*{{{*/
     {
@@ -833,5 +867,28 @@ class DVBCtrl extends Base
     {
         $this->favsonly=false;
     } /*}}}*/
+    public function epgCapStart()/*{{{*/
+    {
+        if(false!==($junk=$this->request("epgcapstart"))){
+            $this->epgcapturing=true;
+            $this->sendData("epgdata");
+            return true;
+        }
+        return false;
+    }/*}}}*/
+    public function epgCapStop()/*{{{*/
+    {
+        if(false!==($junk=$this->request("epgcapstop"))){
+            $this->epgcapturing=false;
+            $this->disconnect();
+            $this->connect();
+            return true;
+        }
+        return false;
+    }/*}}}*/
+    public function getEpgEvent()/*{{{*/
+    {
+        return $this->rcvEpgEvent();
+    }/*}}}*/
 }
 ?>
