@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Sunday 15 June 2014, 09:52:57
- * Last Modified: Sunday 15 June 2014, 10:46:29
+ * Last Modified: Sunday 15 June 2014, 10:52:58
  * Revision: $Id$
  * Version: 0.00
  */
@@ -34,6 +34,7 @@ class EPG extends DVBCtrl
         }
         if($truncate){
             $this->mx->query("truncate epg");
+            $this->debug("epg table truncated");
         }
         $this->xml=new XMLReader();
     }/*}}}*/

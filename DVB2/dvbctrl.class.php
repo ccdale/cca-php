@@ -9,7 +9,7 @@
  * chris.allison@hotmail.com
  *
  * Started: Tuesday  3 June 2014, 06:13:35
- * Last Modified: Sunday 15 June 2014, 09:57:39
+ * Last Modified: Sunday 15 June 2014, 11:04:47
  * Revision: $Id$
  * Version: 0.00
  */
@@ -72,7 +72,7 @@ class DVBCtrl extends Base
         }
         parent::__destruct();
     }/*}}}*/
-    private function disconnect()/*{{{*/
+    protected function disconnect()/*{{{*/
     {
         if($this->connected){
             $this->sendData("logout");
@@ -83,7 +83,7 @@ class DVBCtrl extends Base
             $this->fp=false;
         }
     }/*}}}*/
-    private function connect()/*{{{*/
+    protected function connect()/*{{{*/
     {
         $ret=false;
         try{
@@ -107,7 +107,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     }/*}}}*/
-    private function authenticate()/*{{{*/
+    protected function authenticate()/*{{{*/
     {
         if(false!==($junk=$this->request("auth",array($this->user,$this->pass),false))){
             return true;
@@ -115,7 +115,7 @@ class DVBCtrl extends Base
         $this->error("failed to authenticate");
         return false;
     }/*}}}*/
-    private function rcvData()/*{{{*/
+    protected function rcvData()/*{{{*/
     {
         $ident="DVBStreamer/";
         $ret=false;
@@ -158,7 +158,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     }/*}}}*/
-    private function sendData($data)/*{{{*/
+    protected function sendData($data)/*{{{*/
     {
         if($this->connected){
             // print "Sending: $data\n";
@@ -172,7 +172,7 @@ class DVBCtrl extends Base
             }
         }
     }/*}}}*/
-    private function checkReply($reply)/*{{{*/
+    protected function checkReply($reply)/*{{{*/
     {
         $ret=false;
         $tmp=print_r($reply,true);
@@ -208,7 +208,7 @@ class DVBCtrl extends Base
         // }
         return $ret;
     }/*}}}*/
-    private function favsOnly($filternumber) /*{{{*/
+    protected function favsOnly($filternumber) /*{{{*/
     {
         if($filternumber==0){
             $filter="<Primary>";
@@ -222,7 +222,7 @@ class DVBCtrl extends Base
         }
         $this->request("setsfavsonly","$filter $on");
     } /*}}}*/
-    private function filterExists($filter="") /*{{{*/
+    protected function filterExists($filter="") /*{{{*/
     {
         $ret=false;
         if(is_string($filter) && $filter){
@@ -239,7 +239,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
-    private function isFilterFree($filter) /*{{{*/
+    protected function isFilterFree($filter) /*{{{*/
     {
         $ret=false;
         if(is_string($filter) && $filter){
@@ -257,7 +257,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
-    private function findFreeFilter() /*{{{*/
+    protected function findFreeFilter() /*{{{*/
     {
         $ret=-1;
         if(false!==($srec=$this->lsRecording())){
@@ -275,7 +275,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
-    private function removeFilter($filter) /*{{{*/
+    protected function removeFilter($filter) /*{{{*/
     {
         if($filter!="<Primary>"){
             if(false!==($reply=$this->request("rmsf",$filter))){
@@ -286,7 +286,7 @@ class DVBCtrl extends Base
         }
         return false;
     } /*}}}*/
-    private function waitForSignalLock() /*{{{*/
+    protected function waitForSignalLock() /*{{{*/
     {
         $waiting=19;
         while($waiting>0){
@@ -310,7 +310,7 @@ class DVBCtrl extends Base
             sleep(1);
         }
     } /*}}}*/
-    private function cleanupServiceFilters($force=false) /*{{{*/
+    protected function cleanupServiceFilters($force=false) /*{{{*/
     {
         $ret=false;
         if(false!==($sfarr=$this->lsRecording(false))){
@@ -338,7 +338,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     } /*}}}*/
-    private function getsf($filtername)/*{{{*/
+    protected function getsf($filtername)/*{{{*/
     {
         $ret=false;
         if(false!==($cn=$this->ValidString($filtername))){
@@ -363,7 +363,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     }/*}}}*/
-    private function getsfmrl($filtername)/*{{{*/
+    protected function getsfmrl($filtername)/*{{{*/
     {
         $ret=false;
         if(false!==($cn=$this->ValidString($filtername))){
@@ -383,7 +383,7 @@ class DVBCtrl extends Base
         }
         return $ret;
     }/*}}}*/
-    private function decodeMrl($mrl)/*{{{*/
+    protected function decodeMrl($mrl)/*{{{*/
     {
         $ret=false;
         if(false!==($cn=$this->ValidString($mrl))){
