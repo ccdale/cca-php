@@ -7,7 +7,7 @@
  * daemon@cca.me.uk
  *
  * Started: Thursday 25 March 2010, 17:55:03
- * Last Modified: Tuesday 19 April 2011, 11:31:36
+ * Last Modified: Saturday 12 July 2014, 10:52:40
  * Version: $Id: time.php 528 2011-04-19 10:33:01Z chris $
  */
 
@@ -36,4 +36,12 @@ function tdd($timestamp=0,$withseconds=false,$withmonth=false,$withyear=false)
 {
     return ttd($timestamp,$withmonth,$withyear) . " " . ttt($timestamp,$withseconds);
 }
+function getTextDay($ts) // {{{
+{
+    return date("D",$ts);
+} // }}}
+function getTextMonth($ts) // {{{
+{
+    return date("M",$ts);
+} // }}}
 ?>
