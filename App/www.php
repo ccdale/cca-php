@@ -10,7 +10,7 @@
  *
  * Started: Saturday 24 January 2009, 17:37:47
  * Version: 0.1
- * Last Modified: Thursday 19 August 2010, 07:45:43
+ * Last Modified: Sunday 13 July 2014, 09:26:37
  *
  * $Id: www.php 485 2010-08-19 15:11:31Z chris $
  */
@@ -22,7 +22,10 @@
 */
 function GP($var,$trusted=false)
 {
-	$op=$_GET[$var];
+    $op=false;
+    if(isset($_GET[$var])){
+        $op=$_GET[$var];
+    }
 	if(isset($_POST[$var]))
 	{
 		$op=$_POST[$var];
