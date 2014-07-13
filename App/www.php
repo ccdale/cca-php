@@ -10,7 +10,7 @@
  *
  * Started: Saturday 24 January 2009, 17:37:47
  * Version: 0.1
- * Last Modified: Sunday 13 July 2014, 10:17:06
+ * Last Modified: Sunday 13 July 2014, 11:02:45
  *
  * $Id: www.php 485 2010-08-19 15:11:31Z chris $
  */
@@ -46,6 +46,7 @@ function GP($var,$trusted=false)
  */
 function getDefaultInt($var,$default)
 {
+    $op=false;
     if(false!==($tmp=GP($var))){
         $tmp=intval($tmp);
         if($tmp>0){
@@ -53,7 +54,10 @@ function getDefaultInt($var,$default)
         }else{
             $op=$default;
         }
+    }else{
+        $op=$default;
     }
+    return $op;
 } // }}}
 /* // {{{ function GPA($namearr)
  * returns an array containing 
