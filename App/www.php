@@ -10,7 +10,7 @@
  *
  * Started: Saturday 24 January 2009, 17:37:47
  * Version: 0.1
- * Last Modified: Sunday 13 July 2014, 09:26:37
+ * Last Modified: Sunday 13 July 2014, 10:17:06
  *
  * $Id: www.php 485 2010-08-19 15:11:31Z chris $
  */
@@ -39,6 +39,21 @@ function GP($var,$trusted=false)
 		// $op=addslashes($op);
 	}
 	return $op;
+} // }}}
+/** // {{{ function getDefaultInt($var,$default)
+ * returns the contents of the GET or POST variable
+ * as an int, or the default value if it isn't set
+ */
+function getDefaultInt($var,$default)
+{
+    if(false!==($tmp=GP($var))){
+        $tmp=intval($tmp);
+        if($tmp>0){
+            $op=$tmp;
+        }else{
+            $op=$default;
+        }
+    }
 } // }}}
 /* // {{{ function GPA($namearr)
  * returns an array containing 
